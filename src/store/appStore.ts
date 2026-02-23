@@ -27,12 +27,12 @@ export interface VectorizerSettings {
 }
 
 export const defaultSettings: VectorizerSettings = {
-	ltres: 1,
-	qtres: 1,
+	ltres: 3,
+	qtres: 3,
 	pathomit: 8,
-	rightangleenhance: true,
+	rightangleenhance: false,
 	colorsampling: 2,
-	numberofcolors: 16,
+	numberofcolors: 8,
 	mincolorratio: 0,
 	colorquantcycles: 3,
 	layering: 0,

@@ -1,59 +1,76 @@
 
 > astro-template@1.0.0 dev
-> astro dev --port 4321
+> astro dev
 
-22:02:36 [types] Generated 1ms
-22:02:36 [content] Syncing content
+▶ Astro collects anonymous usage data.
+  This information helps us improve Astro.
+  Run "astro telemetry disable" to opt-out.
+  https://astro.build/telemetry
 
-PWA v0.21.1
-WARNING: you must install the following dev dependencies to use the PWA assets generator:
-- "@vite-pwa/assets-generator"
-- "sharp" (should be installed when installing @vite-pwa/assets-generator)
-- "sharp-ico" (should be installed when installing @vite-pwa/assets-generator) Error:
-Something went wrong installing the "sharp" module
+23:40:42 [types] Generated 0ms
+23:40:42 [content] Syncing content
+23:40:42 [content] Synced content
 
-Cannot find module '../build/Release/sharp-linux-x64.node'
-Require stack:
-- /app/node_modules/@vite-pwa/assets-generator/node_modules/sharp/lib/sharp.js
-- /app/node_modules/@vite-pwa/assets-generator/node_modules/sharp/lib/constructor.js
-- /app/node_modules/@vite-pwa/assets-generator/node_modules/sharp/lib/index.js
-
-Possible solutions:
-- Install with verbose logging and look for errors: "npm install --ignore-scripts=false --foreground-scripts --verbose sharp"
-- Install for the current linux-x64 runtime: "npm install --platform=linux --arch=x64 sharp"
-- Consult the installation documentation: https://sharp.pixelplumbing.com/install
-    at Object.<anonymous> (/app/node_modules/@vite-pwa/assets-generator/node_modules/sharp/lib/sharp.js:37:9)
-    at Module._compile (node:internal/modules/cjs/loader:1706:14)
-    at Object..js (node:internal/modules/cjs/loader:1839:10)
-    at Module.load (node:internal/modules/cjs/loader:1441:32)
-    at Function._load (node:internal/modules/cjs/loader:1263:12)
-    at TracingChannel.traceSync (node:diagnostics_channel:328:14)
-    at wrapModuleLoad (node:internal/modules/cjs/loader:237:24)
-    at Module.require (node:internal/modules/cjs/loader:1463:12)
-    at require (node:internal/modules/helpers:147:16)
-    at Object.<anonymous> (/app/node_modules/@vite-pwa/assets-generator/node_modules/sharp/lib/constructor.js:11:1)
-22:02:36 [content] Synced content
-22:02:36 [vite] Re-optimizing dependencies because vite config has changed
-
- astro  v5.5.2 ready in 770 ms
+ astro  v5.5.2 ready in 921 ms
 
 ┃ Local    http://localhost:4321/
 ┃ Network  use --host to expose
 
-22:02:36 watching for file changes...
+23:40:42 watching for file changes...
 
  update  ▶ New version of Astro available: 5.17.3
   Run npx @astrojs/upgrade to update
 
-22:03:21 [200] /en 398ms
-22:03:24 [vite] ✨ new dependencies optimized: imagetracerjs
-22:03:24 [vite] ✨ optimized dependencies changed. reloading
-22:03:24 [watch] dev_server.log
-22:03:24 [watch] dev_server.log
-22:03:24 [200] /en 22ms
-22:03:24 [watch] dev_server.log
-22:03:24 [watch] dev_server.log
-22:03:56 [watch] verification/verify_vector_app.py
-22:03:56 [watch] verification/verify_vector_app.py
-22:03:56 [watch] dev_server.log
-22:03:56 [watch] dev_server.log
+23:41:59 [200] / 583ms
+23:42:00 [200] /en 43ms
+23:42:00 [watch] dev_server.log
+23:42:00 [watch] dev_server.log
+23:42:02 [vite] ✨ new dependencies optimized: imagetracerjs
+23:42:02 [vite] ✨ optimized dependencies changed. reloading
+23:42:02 [watch] dev_server.log
+23:42:02 [watch] dev_server.log
+23:42:03 [200] /en 23ms
+23:42:03 [watch] dev_server.log
+23:42:03 [watch] dev_server.log
+23:42:06 [200] /en 17ms
+23:42:06 [watch] dev_server.log
+23:42:06 [watch] dev_server.log
+23:43:21 Configuration file updated. Restarting...
+23:43:21 [watch] astro.config.mjs
+23:43:21 [watch] astro.config.mjs
+23:43:21 [watch] dev_server.log
+23:43:21 [watch] dev_server.log
+23:43:21 [watch] /src/styles/global.css
+23:43:21 [watch] /src/components/shared/LanguageSelector.tsx, /src/styles/global.css
+23:43:21 [watch] src/components/shared/LanguageSelector.tsx
+23:43:21 [watch] /src/components/ui/button.tsx, /src/styles/global.css
+23:43:21 [watch] src/components/ui/button.tsx
+23:43:21 [watch] /src/components/shared/ThemeToggle.tsx, /src/styles/global.css
+23:43:21 [watch] src/components/shared/ThemeToggle.tsx
+23:43:21 [watch] /src/components/ui/slider.tsx, /src/styles/global.css
+23:43:21 [watch] src/components/ui/slider.tsx
+23:43:21 [watch] /src/components/ui/switch.tsx, /src/styles/global.css
+23:43:21 [watch] src/components/ui/switch.tsx
+23:43:21 [watch] /src/components/ui/tabs.tsx, /src/styles/global.css
+23:43:21 [watch] src/components/ui/tabs.tsx
+23:43:21 [watch] dev_server.log
+23:43:21 [watch] dev_server.log
+23:43:21 [watch] /src/components/ui/label.tsx, /src/styles/global.css
+23:43:21 [watch] src/components/ui/label.tsx
+23:43:21 [watch] /src/components/vectorizer/ControlPanel.tsx, /src/styles/global.css
+23:43:21 [watch] src/components/vectorizer/ControlPanel.tsx
+23:43:21 [watch] /src/components/vectorizer/HistorySidebar.tsx, /src/styles/global.css
+23:43:21 [watch] src/components/vectorizer/HistorySidebar.tsx
+23:43:21 [watch] /src/components/vectorizer/SVGPreview.tsx, /src/styles/global.css
+23:43:21 [watch] src/components/vectorizer/SVGPreview.tsx
+23:43:21 [watch] /src/components/vectorizer/UploadZone.tsx, /src/styles/global.css
+23:43:21 [watch] src/components/vectorizer/UploadZone.tsx
+23:43:21 [watch] /src/styles/global.css, /src/components/shared/LanguageSelector.tsx
+23:43:21 [watch] src/i18n/ui.ts
+23:43:21 [watch] /src/components/vectorizer/VectorApp.tsx, /src/styles/global.css
+23:43:21 [watch] src/components/vectorizer/VectorApp.tsx
+23:43:21 [vite] Re-optimizing dependencies because vite config has changed
+23:43:21 [content] Syncing content
+23:43:21 [content] Synced content
+23:43:21 [types] Generated 305ms
+23:43:21 [vite] Re-optimizing dependencies because vite config has changed
