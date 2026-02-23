@@ -1,7 +1,8 @@
 ---
-import Hero from "@/components/Hero.astro";
+import { VectorApp } from "@/components/vectorizer/VectorApp";
 import { defaultLang, languages, ui } from "@/i18n/ui";
 import Layout from "@/layouts/Layout.astro";
+import "@/styles/global.css";
 
 export function getStaticPaths() {
 	return Object.keys(languages).map((lang) => ({ params: { lang } }));
@@ -19,7 +20,7 @@ function t(key: keyof (typeof ui)[typeof defaultLang]) {
 	description={t('site.description')}
 	lang={lang}
 >
-	<main class='container mx-auto'>
-		<Hero lang={lang} />
-	</main>
+	<div class="fixed inset-0 z-0 bg-background">
+		<VectorApp client:only="react" />
+	</div>
 </Layout>

@@ -15,7 +15,10 @@
 			"@/layouts/*": ["src/layouts/*"],
 			"@/pages/*": ["src/pages/*"],
 			"@/styles/*": ["src/styles/*"],
-			"@/i18n/*": ["src/i18n/*"]
+			"@/i18n/*": ["src/i18n/*"],
+			"@/lib/*": ["src/lib/*"],
+			"@/store/*": ["src/store/*"],
+			"@/hooks/*": ["src/hooks/*"]
 		},
 		"verbatimModuleSyntax": true,
 		"strictNullChecks": true,
