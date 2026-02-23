@@ -1,0 +1,124 @@
+---
+import { defaultLang, ui } from "@/i18n/ui";
+
+interface Props {
+	lang?: string;
+}
+
+const { lang = defaultLang } = Astro.props;
+
+function t(key: keyof (typeof ui)[typeof defaultLang]) {
+	return ui[lang as keyof typeof ui][key] || ui[defaultLang][key];
+}
+---
+
+<section class='group flex flex-col items-center justify-center gap-16 py-12'>
+	<div class='flex flex-col gap-4 md:gap-8'>
+		<h1 class='text-center text-4xl font-black text-zinc-900 dark:text-zinc-100 md:text-6xl'>{t('hero.title')}</h1>
+		<p class='text-center font-normal text-pretty text-zinc-600 dark:text-zinc-300 md:text-xl'>
+			{t('hero.subtitle')}
+		</p>
+	</div>
+
+	<div class='grid grid-cols-2 gap-4 p-4 md:grid-cols-4 md:px-4 lg:grid-cols-6 lg:px-4 xl:px-0'>
+		<div
+			class='group flex flex-col items-center justify-center space-y-1 rounded-lg border border-zinc-200 px-4 pt-4 pb-2 hover:bg-zinc-200/50 dark:border-zinc-800 dark:hover:bg-zinc-800/50'>
+			<svg
+				xmlns='http://www.w3.org/2000/svg'
+				fill='none'
+				viewBox='0 0 24 24'
+				width='45'
+				height='45'>
+				<path
+					fill='#EA580C'
+					fill-rule='evenodd'
+					d='M5.522 13.915c-.268.895-.402 1.341-.37 1.766.032.374.154.733.356 1.045.229.351.602.611 1.35 1.13l3.3 2.297c.666.463 1 .696 1.36.786.318.08.65.08.97.003.36-.09.696-.32 1.365-.78l3.336-2.302c.755-.52 1.133-.78 1.365-1.135.204-.313.326-.675.355-1.052.033-.428-.105-.877-.379-1.777l-2.923-9.599c-.141-.466-.212-.699-.348-.872a1.119 1.119 0 00-.45-.343C14.613 3 14.379 3 13.91 3H10.1c-.47 0-.706 0-.905.084-.176.073-.33.192-.45.345-.136.174-.206.408-.345.876l-2.878 9.611zm8.536-8.878c.112.145.17.344.285.736l2.51 8.6a10.147 10.147 0 00-3.001-1.058l-1.633-5.762a.222.222 0 00-.078-.113.207.207 0 00-.253 0 .222.222 0 00-.077.113l-1.614 5.758c-1.05.19-2.067.549-3.014 1.062l2.523-8.601c.114-.394.172-.59.284-.736.1-.128.23-.228.376-.29.167-.07.364-.07.757-.07h1.801c.394 0 .592 0 .759.07a.943.943 0 01.375.291zm-1.945 10.367c.95 0 1.777-.25 2.19-.62a1.961 1.961 0 01-.133 1.467c-.265.511-.65.765-.995.994-.436.288-.81.537-.81 1.202 0 .22.049.43.136.615a1.622 1.622 0 01-.72-.617c-.176-.275-.27-.599-.27-.93v-.041c0-.46 0-1.026-.62-1.026a.634.634 0 00-.466.2.689.689 0 00-.193.486c-.698-.73-.637-1.779-.637-1.779 0-.214.02-.548.112-.84.26.51 1.238.888 2.406.888v.001z'
+					clip-rule='evenodd'
+				></path>
+			</svg>
+			<p class='text-center text-sm tracking-tight text-black dark:text-white'>Astro</p>
+		</div>
+
+		<div
+			class='group flex flex-col items-center justify-center space-y-1 rounded-lg border border-zinc-200 p-4 hover:bg-zinc-200/50 dark:border-zinc-800 dark:hover:bg-zinc-800/50'>
+			<svg
+				xmlns='http://www.w3.org/2000/svg'
+				fill='none'
+				viewBox='0 0 24 24'
+				width='45'
+				height='45'>
+				<path
+					fill='#0EA5E9'
+					fill-rule='evenodd'
+					d='M12 6C9.333 6 7.667 7.325 7 9.976c1-1.325 2.167-1.822 3.5-1.49.76.188 1.305.737 1.906 1.344.98.99 2.116 2.134 4.594 2.134 2.667 0 4.333-1.325 5-3.976-1 1.326-2.166 1.822-3.5 1.49-.76-.188-1.305-.737-1.906-1.344C15.614 7.144 14.479 6 12 6zm-5 5.964c-2.667 0-4.333 1.325-5 3.976 1-1.325 2.167-1.822 3.5-1.491.76.189 1.305.738 1.906 1.345.98.99 2.115 2.134 4.594 2.134 2.667 0 4.334-1.325 5-3.976-1 1.325-2.167 1.822-3.5 1.491-.76-.189-1.305-.738-1.906-1.345-.98-.989-2.116-2.134-4.594-2.134z'
+					clip-rule='evenodd'
+				></path>
+			</svg>
+			<p class='text-center text-sm tracking-tight text-black dark:text-white'>Tailwind</p>
+		</div>
+
+		<div
+			class='group flex flex-col items-center justify-center space-y-1 rounded-lg border border-zinc-200 p-4 hover:bg-zinc-200/50 dark:border-zinc-800 dark:hover:bg-zinc-800/50'>
+			<svg
+				xmlns='http://www.w3.org/2000/svg'
+				fill='none'
+				viewBox='0 0 24 24'
+				width='45'
+				height='45'>
+				<path
+					fill='#2563EB'
+					d='M3.234 9.093V7.318h8.363v1.775H8.479V17.5H6.352V9.093H3.234zm15.263 1.153c-.04-.4-.21-.712-.512-.934-.301-.222-.71-.333-1.228-.333-.351 0-.648.05-.89.149-.242.096-.427.23-.557.403a.969.969 0 00-.189.586.838.838 0 00.115.477c.086.136.204.254.353.353.149.097.321.181.517.254.195.07.404.13.626.179l.915.219c.444.1.852.232 1.223.397.371.166.693.37.965.612.271.242.482.527.631.855.152.328.23.704.234 1.129-.004.623-.163 1.163-.478 1.62-.311.454-.762.807-1.352 1.06-.587.248-1.294.372-2.123.372-.822 0-1.538-.126-2.147-.378-.607-.252-1.081-.624-1.422-1.118-.338-.497-.516-1.112-.532-1.845h2.083c.023.342.12.627.293.855.176.226.41.397.701.513.295.112.628.168 1 .168.364 0 .68-.053.949-.159.272-.106.482-.253.631-.442.15-.189.224-.406.224-.651a.846.846 0 00-.204-.577c-.132-.156-.328-.288-.586-.398a5.964 5.964 0 00-.94-.298l-1.109-.278c-.858-.21-1.536-.536-2.033-.98-.497-.444-.744-1.042-.74-1.795-.004-.616.16-1.155.491-1.615.335-.461.794-.82 1.377-1.08.584-.258 1.247-.387 1.99-.387.755 0 1.414.13 1.978.388.567.258 1.007.618 1.322 1.079.315.46.477.994.488 1.6h-2.064z'
+				></path>
+			</svg>
+			<p class='text-center text-sm tracking-tight text-black dark:text-white'>Typescript</p>
+		</div>
+
+		<div
+			class='group flex flex-col items-center justify-center space-y-1 rounded-lg border border-zinc-200 p-4 hover:bg-zinc-200/50 dark:border-zinc-800 dark:hover:bg-zinc-800/50'>
+			<svg
+				viewBox='0 0 24 24'
+				fill='none'
+				xmlns='http://www.w3.org/2000/svg'
+				width='45'
+				height='45'>
+				<path
+					d='M12 4L21 19.5886H3L12 4Z'
+					fill='#64748B'
+				></path>
+			</svg>
+			<p class='text-center text-sm tracking-tight text-black dark:text-white'>Vercel</p>
+		</div>
+
+		<div
+			class='group flex flex-col items-center justify-center space-y-1 rounded-lg border border-zinc-200 p-4 hover:bg-zinc-200/50 dark:border-zinc-800 dark:hover:bg-zinc-800/50'>
+			<svg
+				xmlns='http://www.w3.org/2000/svg'
+				viewBox='0 0 24 24'
+				fill='none'
+				width='45'
+				height='45'>
+				<path
+					fill='#A78BFA'
+					d='m12.87 15.07-2.54-2.51.03-.03A17.52 17.52 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04ZM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12Zm-2.62 7 1.62-4.33L19.12 17h-3.24Z'
+				></path>
+			</svg>
+			<p class='text-center text-sm tracking-tight text-black dark:text-white'>i18n</p>
+		</div>
+
+		<div
+			class='group flex flex-col items-center justify-center space-y-1 rounded-lg border border-zinc-200 p-4 hover:bg-zinc-200/50 dark:border-zinc-800 dark:hover:bg-zinc-800/50'>
+			<svg
+				xmlns='http://www.w3.org/2000/svg'
+				fill='none'
+				viewBox='0 0 24 24'
+				width='45'
+				height='45'>
+				<path
+					fill='#3B82F6'
+					d='M12 2l9 5-9 5-9-5 9-5z M12 22l9-5V7l-9 5-9-5v10l9 5z'
+				></path>
+			</svg>
+			<p class='text-center text-sm tracking-tight text-black dark:text-white'>Biome</p>
+		</div>
+	</div>
+</section>

@@ -1,0 +1,25 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@custom-variant dark {
+  &:where(.dark, .dark *) {
+    @slot;
+  }
+}
+
+@theme {
+	/* Fonts */
+	--font-sans:
+		'Geist Sans', 'Google Sans', ui-sans-serif, system-ui, -apple-system, 'BlinkMacSystemFont', 'Segoe UI', 'Roboto',
+		'Helvetica Neue', 'Arial', 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+		'Segoe UI Symbol', 'Noto Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
+
+	--font-serif: ui-serif, georgia, cambria, 'Times New Roman', times, serif;
+
+	--font-mono:
+		'Google Sans Code', 'Geist Mono', ui-monospace, 'SFMono-Regular', menlo, monaco, consolas, 'Liberation Mono', 'Courier New',
+		monospace;
+
+	--font-title: 'Google Sans', 'Geist Sans', sans-serif;
+	--font-paragraph: 'Geist Sans', sans-serif;
+}

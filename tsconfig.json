@@ -1,0 +1,28 @@
+{
+	"extends": "astro/tsconfigs/strict",
+	"include": [".astro/types.d.ts", "**/*"],
+	"exclude": ["dist"],
+	"compilerOptions": {
+		"types": [
+			"astro/client",
+			"vite-plugin-pwa/vanillajs",
+			"vite-plugin-pwa/info",
+			"vite-plugin-pwa/pwa-assets"
+		],
+		"baseUrl": ".",
+		"paths": {
+			"@/components/*": ["src/components/*"],
+			"@/layouts/*": ["src/layouts/*"],
+			"@/pages/*": ["src/pages/*"],
+			"@/styles/*": ["src/styles/*"],
+			"@/i18n/*": ["src/i18n/*"]
+		},
+		"verbatimModuleSyntax": true,
+		"strictNullChecks": true,
+		"plugins": [
+			{
+				"name": "@astrojs/ts-plugin"
+			}
+		]
+	}
+}

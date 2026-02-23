@@ -1,0 +1,30 @@
+---
+import "@/styles/global.css";
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="generator" content={Astro.generator} />
+		<title>Loading...</title>
+		<meta http-equiv="refresh" content="0;url=/en" />
+		<script is:inline>
+			window.location.href = "/en";
+		</script>
+	</head>
+	<body
+		class="bg-gray-950 text-white flex flex-col items-center justify-center min-h-screen"
+	>
+		<div class="relative flex items-center justify-center">
+			<div
+				class="absolute animate-ping h-12 w-12 rounded-full bg-blue-400 opacity-75"
+			>
+			</div>
+			<div class="relative rounded-full h-12 w-12 bg-blue-500"></div>
+		</div>
+		<p class="mt-4 text-blue-200 animate-pulse">Loading...</p>
+	</body>
+</html>

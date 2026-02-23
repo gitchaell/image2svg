@@ -1,0 +1,25 @@
+---
+import Hero from "@/components/Hero.astro";
+import { defaultLang, languages, ui } from "@/i18n/ui";
+import Layout from "@/layouts/Layout.astro";
+
+export function getStaticPaths() {
+	return Object.keys(languages).map((lang) => ({ params: { lang } }));
+}
+
+const { lang } = Astro.params;
+
+function t(key: keyof (typeof ui)[typeof defaultLang]) {
+	return ui[lang as keyof typeof ui][key] || ui[defaultLang][key];
+}
+---
+
+<Layout
+	title={t('site.title')}
+	description={t('site.description')}
+	lang={lang}
+>
+	<main class='container mx-auto'>
+		<Hero lang={lang} />
+	</main>
+</Layout>

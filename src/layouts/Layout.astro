@@ -1,0 +1,33 @@
+---
+import Analytics from "@vercel/analytics/astro";
+import Head from "@/components/Head.astro";
+import LanguageSelector from "@/components/LanguageSelector.astro";
+import ThemeToggle from "@/components/ThemeToggle.astro";
+
+interface Props {
+	title: string;
+	description: string;
+	domain?: string;
+	lang?: string;
+}
+
+const { title, description, lang = Astro.currentLocale || "en" } = Astro.props;
+---
+
+<!doctype html>
+<html lang={lang}>
+	<Head
+		title={title}
+		description={description}
+	/>
+
+	<body
+		class='relative h-dvh overflow-x-hidden overflow-y-auto bg-zinc-50 font-sans text-black antialiased selection:bg-zinc-300 selection:text-zinc-900 dark:bg-zinc-900 dark:text-white dark:selection:bg-zinc-700 dark:selection:text-zinc-50'>
+		<div class='absolute top-4 right-4 z-50 flex items-center gap-2'>
+			<LanguageSelector />
+			<ThemeToggle />
+		</div>
+		<slot />
+		<Analytics />
+	</body>
+</html>

@@ -1,0 +1,48 @@
+---
+import "@/styles/fonts.css";
+import "@/styles/global.css";
+import { ClientRouter } from "astro:transitions";
+import Favicon from "@/components/Favicon.astro";
+import SEO from "@/components/SEO.astro";
+
+interface Props {
+	title: string;
+	description: string;
+	domain?: string;
+}
+
+const { title, description } = Astro.props;
+---
+
+<head>
+	<meta charset='UTF-8' />
+	<meta
+		name='viewport'
+		content='width=device-width'
+	/>
+	<Favicon />
+	<meta
+		name='generator'
+		content={Astro.generator}
+	/>
+	<title>{title}</title>
+	<SEO
+		url='https://amazing.app/'
+		title={title}
+		description={description}
+		image={{ url: 'https://amazing.app/opengraph/image.png', alt: 'Amazing App Image' }}
+		twitter={{ site: { username: '@amazingapp' } }}
+		opengraph={{ type: 'website', locale: 'en', site: { name: 'Amazing App' } }}
+	/>
+	<ClientRouter />
+	<script is:inline>
+		if (
+			localStorage.theme === 'dark' ||
+			(!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)
+		) {
+			document.documentElement.classList.add('dark');
+		} else {
+			document.documentElement.classList.remove('dark');
+		}
+	</script>
+</head>

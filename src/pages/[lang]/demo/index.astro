@@ -1,0 +1,50 @@
+---
+import { Activity, Code } from "@lucide/astro";
+import { languages } from "@/i18n/ui";
+import Layout from "@/layouts/Layout.astro";
+
+export function getStaticPaths() {
+	return Object.keys(languages).map((lang) => ({ params: { lang } }));
+}
+
+const { lang } = Astro.params;
+---
+
+<Layout title="Demo Page" description="A demo page showcasing typography and theme." lang={lang}>
+	<main class="container mx-auto max-w-2xl py-12 px-4 prose dark:prose-invert">
+		<h1 class="text-4xl font-bold mb-8 text-black dark:text-white">Typography Demo</h1>
+
+		<div class="space-y-6 text-zinc-800 dark:text-zinc-200">
+			<section>
+				<h2 class="text-2xl font-semibold mb-2 flex items-center gap-2"><Code /> Headings</h2>
+				<h1 class="text-4xl font-bold">Heading 1</h1>
+				<h2 class="text-3xl font-bold">Heading 2</h2>
+				<h3 class="text-2xl font-bold">Heading 3</h3>
+				<h4 class="text-xl font-bold">Heading 4</h4>
+			</section>
+
+			<section>
+				<h2 class="text-2xl font-semibold mb-2 flex items-center gap-2"><Activity /> Paragraphs</h2>
+				<p class="mb-4">
+					This is a paragraph using the <strong>Geist Sans</strong> font. It is optimized for readability.
+					Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam non urna erot.
+				</p>
+				<p class="font-mono bg-zinc-100 dark:bg-zinc-800 p-4 rounded text-sm">
+					This block uses the <strong>Google Sans Code</strong> font.
+					const hello = "world";
+					console.log(hello);
+				</p>
+			</section>
+
+			<section>
+				<h2 class="text-2xl font-semibold mb-2">Buttons & Interactive</h2>
+				<button class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">
+					Primary Button
+				</button>
+				<button class="px-4 py-2 bg-zinc-200 text-zinc-900 rounded hover:bg-zinc-300 transition dark:bg-zinc-700 dark:text-white dark:hover:bg-zinc-600 ml-2">
+					Secondary Button
+				</button>
+			</section>
+		</div>
+	</main>
+</Layout>

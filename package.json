@@ -1,0 +1,60 @@
+{
+	"name": "astro-template",
+	"type": "module",
+	"version": "1.0.0",
+	"author": {
+		"email": "f.michaell.a.m@gmail.com",
+		"name": "Michaell Alavedra",
+		"url": "https://michaellalavedra.com"
+	},
+	"keywords": [
+		"astro",
+		"template"
+	],
+	"repository": {
+		"url": "https://github.com/gitchaell/astro-template"
+	},
+	"scripts": {
+		"dev": "astro dev",
+		"build": "astro check && astro build",
+		"preview": "astro preview",
+		"astro": "astro",
+		"format": "biome format --write .",
+		"lint": "biome lint .",
+		"lint:fix": "biome check --write .",
+		"check": "biome check .",
+		"test": "vitest run",
+		"test:watch": "vitest",
+		"test:e2e": "npx playwright test",
+		"test:e2e:report": "npx playwright show-report .playwright/reports"
+	},
+	"dependencies": {
+		"@astrojs/check": "^0.9.4",
+		"@astrojs/sitemap": "^3.2.1",
+		"@astrojs/ts-plugin": "^1.10.4",
+		"@lucide/astro": "^0.575.0",
+		"@tailwindcss/typography": "^0.5.19",
+		"@tailwindcss/vite": "^4.0.4",
+		"@vercel/analytics": "^1.5.0",
+		"astro": "^5.2.5",
+		"tailwindcss": "^4.0.4",
+		"typescript": "^5.7.3"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^2.4.3",
+		"@commitlint/cli": "^19.7.1",
+		"@commitlint/config-conventional": "^19.7.1",
+		"@playwright/test": "^1.50.1",
+		"@types/node": "^22.13.1",
+		"@vite-pwa/assets-generator": "^0.2.6",
+		"@vite-pwa/astro": "^0.5.0",
+		"lint-staged": "^15.4.3",
+		"semantic-release": "^25.0.3",
+		"vitest": "^3.0.5"
+	},
+	"lint-staged": {
+		"*.{js,ts,cjs,mjs,d.cts,d.mts,jsx,tsx,json,jsonc,astro,css}": [
+			"biome check --write --no-errors-on-unmatched"
+		]
+	}
+}
