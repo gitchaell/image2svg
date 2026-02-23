@@ -3,12 +3,14 @@
 import sitemap from "@astrojs/sitemap";
 import tailwindcss from "@tailwindcss/vite";
 import AstroPWA from "@vite-pwa/astro";
+import react from "@astrojs/react";
 import { defineConfig } from "astro/config";
 
 // https://astro.build/config
 export default defineConfig({
 	site: "https://astrotmp.vercel.app",
 	integrations: [
+		react(),
 		sitemap({
 			i18n: {
 				defaultLocale: "en",
@@ -33,7 +35,7 @@ export default defineConfig({
 				theme_color: "#000000",
 			},
 			pwaAssets: {
-				config: true,
+				config: false,
 			},
 			workbox: {
 				navigateFallback: "/404",

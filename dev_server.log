@@ -1,0 +1,59 @@
+
+> astro-template@1.0.0 dev
+> astro dev --port 4321
+
+22:02:36 [types] Generated 1ms
+22:02:36 [content] Syncing content
+
+PWA v0.21.1
+WARNING: you must install the following dev dependencies to use the PWA assets generator:
+- "@vite-pwa/assets-generator"
+- "sharp" (should be installed when installing @vite-pwa/assets-generator)
+- "sharp-ico" (should be installed when installing @vite-pwa/assets-generator) Error:
+Something went wrong installing the "sharp" module
+
+Cannot find module '../build/Release/sharp-linux-x64.node'
+Require stack:
+- /app/node_modules/@vite-pwa/assets-generator/node_modules/sharp/lib/sharp.js
+- /app/node_modules/@vite-pwa/assets-generator/node_modules/sharp/lib/constructor.js
+- /app/node_modules/@vite-pwa/assets-generator/node_modules/sharp/lib/index.js
+
+Possible solutions:
+- Install with verbose logging and look for errors: "npm install --ignore-scripts=false --foreground-scripts --verbose sharp"
+- Install for the current linux-x64 runtime: "npm install --platform=linux --arch=x64 sharp"
+- Consult the installation documentation: https://sharp.pixelplumbing.com/install
+    at Object.<anonymous> (/app/node_modules/@vite-pwa/assets-generator/node_modules/sharp/lib/sharp.js:37:9)
+    at Module._compile (node:internal/modules/cjs/loader:1706:14)
+    at Object..js (node:internal/modules/cjs/loader:1839:10)
+    at Module.load (node:internal/modules/cjs/loader:1441:32)
+    at Function._load (node:internal/modules/cjs/loader:1263:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:328:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:237:24)
+    at Module.require (node:internal/modules/cjs/loader:1463:12)
+    at require (node:internal/modules/helpers:147:16)
+    at Object.<anonymous> (/app/node_modules/@vite-pwa/assets-generator/node_modules/sharp/lib/constructor.js:11:1)
+22:02:36 [content] Synced content
+22:02:36 [vite] Re-optimizing dependencies because vite config has changed
+
+ astro  v5.5.2 ready in 770 ms
+
+┃ Local    http://localhost:4321/
+┃ Network  use --host to expose
+
+22:02:36 watching for file changes...
+
+ update  ▶ New version of Astro available: 5.17.3
+  Run npx @astrojs/upgrade to update
+
+22:03:21 [200] /en 398ms
+22:03:24 [vite] ✨ new dependencies optimized: imagetracerjs
+22:03:24 [vite] ✨ optimized dependencies changed. reloading
+22:03:24 [watch] dev_server.log
+22:03:24 [watch] dev_server.log
+22:03:24 [200] /en 22ms
+22:03:24 [watch] dev_server.log
+22:03:24 [watch] dev_server.log
+22:03:56 [watch] verification/verify_vector_app.py
+22:03:56 [watch] verification/verify_vector_app.py
+22:03:56 [watch] dev_server.log
+22:03:56 [watch] dev_server.log
