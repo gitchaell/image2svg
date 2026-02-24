@@ -1,6 +1,7 @@
 import { Copy, Download, Maximize, ZoomIn, ZoomOut } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import { TransformComponent, TransformWrapper } from "react-zoom-pan-pinch";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { db } from "@/lib/db";
 import { useAppStore } from "@/store/appStore";
@@ -29,17 +30,18 @@ export function SVGPreview() {
 			if (type === "success") {
 				setSvgContent(svg);
 				setProcessing(false);
+				toast.success("Vectorization complete");
 			} else if (type === "error") {
 				console.error("Worker error:", error);
 				setProcessing(false);
+				toast.error(`Vectorization failed: ${error}`);
 			}
 		};
 
 		return () => {
 			workerRef.current?.terminate();
 		};
-		// biome-ignore lint/correctness/useExhaustiveDependencies: setProcessing is stable
-	}, []);
+	}, [setProcessing]);
 
 	useEffect(() => {
 		if (!currentImageId || !workerRef.current) {
@@ -60,17 +62,18 @@ export function SVGPreview() {
 					blob: image.originalBlob,
 					settings: JSON.stringify(settings),
 				});
+				// toast.info("Processing image..."); // Maybe too noisy
 			} catch (err) {
 				console.error("Error loading image from DB:", err);
 				setProcessing(false);
+				toast.error("Failed to load image");
 			}
 		};
 
 		// Debounce processing to avoid spamming worker on slider change
 		const timeoutId = setTimeout(processImage, 500);
 		return () => clearTimeout(timeoutId);
-		// biome-ignore lint/correctness/useExhaustiveDependencies: setProcessing is stable
-	}, [currentImageId, settings]);
+	}, [currentImageId, settings, setProcessing, setDetectedColors]);
 
 	// Extract colors when SVG content changes
 	useEffect(() => {
@@ -82,7 +85,7 @@ export function SVGPreview() {
 		const colors = new Set<string>();
 		// Match fill attributes (e.g. fill="rgb(10,20,30)" or fill="#aabbcc")
 		const regex = /fill="([^"]+)"/g;
-		let match;
+		let match: RegExpExecArray | null;
 		// biome-ignore lint/suspicious/noAssignInExpressions: standard regex loop
 		while ((match = regex.exec(svgContent)) !== null) {
 			if (match[1] !== "none") {
@@ -94,24 +97,30 @@ export function SVGPreview() {
 
 	const handleDownload = () => {
 		if (!svgContent) return;
-		const blob = new Blob([svgContent], { type: "image/svg+xml" });
-		const url = URL.createObjectURL(blob);
-		const a = document.createElement("a");
-		a.href = url;
-		a.download = `vectorized-${Date.now()}.svg`;
-		document.body.appendChild(a);
-		a.click();
-		document.body.removeChild(a);
-		URL.revokeObjectURL(url);
+		try {
+			const blob = new Blob([svgContent], { type: "image/svg+xml" });
+			const url = URL.createObjectURL(blob);
+			const a = document.createElement("a");
+			a.href = url;
+			a.download = `vectorized-${Date.now()}.svg`;
+			document.body.appendChild(a);
+			a.click();
+			document.body.removeChild(a);
+			URL.revokeObjectURL(url);
+			toast.success("SVG Downloaded");
+		} catch (e) {
+			toast.error("Download failed");
+		}
 	};
 
 	const handleCopy = async () => {
 		if (!svgContent) return;
 		try {
 			await navigator.clipboard.writeText(svgContent);
-			// Optional: Show toast or feedback? For now just silent success or rely on button state
+			toast.success("SVG copied to clipboard");
 		} catch (err) {
 			console.error("Failed to copy:", err);
+			toast.error("Failed to copy to clipboard");
 		}
 	};
 
@@ -202,14 +211,14 @@ export function SVGPreview() {
 									size="icon"
 									variant="ghost"
 									onClick={() => resetTransform()}
-									title="Fit to Screen / Reset"
+									title="Fit to Screen"
 								>
 									<Maximize className="w-4 h-4" />
 								</Button>
 							</div>
 
 							<TransformComponent
-								wrapperClass="w-full h-full"
+								wrapperClass="w-full h-full cursor-move"
 								contentClass="w-full h-full flex items-center justify-center"
 							>
 								{svgContent ? (
@@ -220,6 +229,7 @@ export function SVGPreview() {
 										style={{
 											maxWidth: "100%",
 											maxHeight: "100%",
+											shapeRendering: "optimizeSpeed",
 										}}
 									/>
 								) : (
