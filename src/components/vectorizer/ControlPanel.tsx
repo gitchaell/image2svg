@@ -1,14 +1,23 @@
-import { ChevronDown, RotateCcw } from "lucide-react";
+import { ChevronDown, RotateCcw, Sparkles } from "lucide-react";
 import type React from "react";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
+import { db } from "@/lib/db";
 import { useAppStore, type VectorizerSettings } from "@/store/appStore";
 
 export function ControlPanel() {
-	const { settings, updateSettings, resetSettings } = useAppStore();
+	const {
+		settings,
+		updateSettings,
+		resetSettings,
+		detectedColors,
+		hiddenColors,
+		toggleHiddenColor,
+		currentImageId,
+	} = useAppStore();
 	const [localSettings, setLocalSettings] =
 		useState<VectorizerSettings>(settings);
 	const [isDirty, setIsDirty] = useState(false);
@@ -36,6 +45,50 @@ export function ControlPanel() {
 		resetSettings();
 	};
 
+	const handleMagic = async () => {
+		if (!currentImageId) return;
+		try {
+			const image = await db.images.get(currentImageId);
+			if (!image) return;
+
+			// Get image dimensions
+			const bitmap = await createImageBitmap(image.originalBlob);
+			const { width, height } = bitmap;
+			const pixelCount = width * height;
+
+			const newSettings = { ...localSettings };
+
+			// Simple heuristics
+			if (pixelCount > 2000 * 2000) {
+				// Very large image
+				newSettings.scale = 0.5;
+				newSettings.ltres = 5;
+				newSettings.qtres = 5;
+				newSettings.numberofcolors = 16;
+				newSettings.pathomit = 16;
+			} else if (pixelCount > 1000 * 1000) {
+				// Large image
+				newSettings.scale = 0.75;
+				newSettings.ltres = 4;
+				newSettings.qtres = 4;
+				newSettings.numberofcolors = 12;
+			} else {
+				// Small/Medium image
+				newSettings.scale = 1;
+				newSettings.ltres = 2; // More detail for small images
+				newSettings.qtres = 2;
+				newSettings.numberofcolors = 8;
+			}
+
+			// Reduce cycles for speed
+			newSettings.colorquantcycles = 1;
+
+			updateSettings(newSettings);
+		} catch (err) {
+			console.error("Magic config failed:", err);
+		}
+	};
+
 	const Section = ({
 		title,
 		children,
@@ -58,14 +111,25 @@ export function ControlPanel() {
 		<div className="flex flex-col h-full bg-background border-l">
 			<div className="flex items-center justify-between p-4 border-b shrink-0">
 				<h2 className="text-lg font-semibold">Settings</h2>
-				<Button
-					variant="ghost"
-					size="icon"
-					onClick={handleReset}
-					title="Reset to defaults"
-				>
-					<RotateCcw className="h-4 w-4" />
-				</Button>
+				<div className="flex gap-1">
+					<Button
+						variant="ghost"
+						size="icon"
+						onClick={handleMagic}
+						disabled={!currentImageId}
+						title="Auto-detect best settings (Magic)"
+					>
+						<Sparkles className="h-4 w-4" />
+					</Button>
+					<Button
+						variant="ghost"
+						size="icon"
+						onClick={handleReset}
+						title="Reset to defaults"
+					>
+						<RotateCcw className="h-4 w-4" />
+					</Button>
+				</div>
 			</div>
 
 			<div className="flex-1 overflow-y-auto px-4">
@@ -87,6 +151,40 @@ export function ControlPanel() {
 								onValueChange={(val) => handleChange("numberofcolors", val[0])}
 							/>
 						</div>
+
+						{detectedColors.length > 0 && (
+							<div className="space-y-2 pt-4 border-t">
+								<Label>Detected Colors</Label>
+								<div className="grid grid-cols-6 gap-2">
+									{detectedColors.map((color) => (
+										<button
+											key={color}
+											type="button"
+											className={`w-8 h-8 rounded border transition-all ${
+												hiddenColors.includes(color)
+													? "opacity-20 grayscale"
+													: "hover:scale-110 ring-1 ring-border"
+											}`}
+											style={{ backgroundColor: color }}
+											onClick={() => toggleHiddenColor(color)}
+											title={
+												hiddenColors.includes(color)
+													? `Show ${color}`
+													: `Hide ${color}`
+											}
+											aria-label={
+												hiddenColors.includes(color)
+													? `Show ${color}`
+													: `Hide ${color}`
+											}
+										/>
+									))}
+								</div>
+								<p className="text-[10px] text-muted-foreground">
+									Click to toggle color visibility
+								</p>
+							</div>
+						)}
 
 						<div className="space-y-2">
 							<div className="flex justify-between">

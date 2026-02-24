@@ -6,6 +6,7 @@ import { ThemeToggle } from "@/components/shared/ThemeToggle";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useMediaQuery } from "@/hooks/use-media-query";
+import { useAppStore } from "@/store/appStore";
 import { ControlPanel } from "./ControlPanel";
 import { HistorySidebar } from "./HistorySidebar";
 import { SVGPreview } from "./SVGPreview";
@@ -15,6 +16,14 @@ export function VectorApp() {
 	const isDesktop = useMediaQuery("(min-width: 1024px)"); // LG breakpoint for 3-pane layout
 	const [showLeftPanel, setShowLeftPanel] = useState(true);
 	const [showRightPanel, setShowRightPanel] = useState(true);
+	const { currentImageId } = useAppStore();
+	const [activeTab, setActiveTab] = useState("library");
+
+	React.useEffect(() => {
+		if (currentImageId) {
+			setActiveTab("preview");
+		}
+	}, [currentImageId]);
 
 	if (isDesktop) {
 		return (
@@ -90,7 +99,8 @@ export function VectorApp() {
 	return (
 		<div className="h-full w-full flex flex-col bg-background text-foreground">
 			<Tabs
-				defaultValue="library"
+				value={activeTab}
+				onValueChange={setActiveTab}
 				className="flex-1 flex flex-col overflow-hidden w-full"
 			>
 				<div className="border-b px-4 py-2 flex items-center justify-between shrink-0 bg-background z-10 h-14">
