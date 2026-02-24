@@ -1,4 +1,4 @@
-import { Download, RotateCcw, ZoomIn, ZoomOut } from "lucide-react";
+import { Copy, Download, Maximize, ZoomIn, ZoomOut } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import { TransformComponent, TransformWrapper } from "react-zoom-pan-pinch";
 import { Button } from "@/components/ui/button";
@@ -6,7 +6,14 @@ import { db } from "@/lib/db";
 import { useAppStore } from "@/store/appStore";
 
 export function SVGPreview() {
-	const { currentImageId, settings, setProcessing, processing } = useAppStore();
+	const {
+		currentImageId,
+		settings,
+		setProcessing,
+		processing,
+		setDetectedColors,
+		hiddenColors,
+	} = useAppStore();
 	const [svgContent, setSvgContent] = useState<string | null>(null);
 	const workerRef = useRef<Worker | null>(null);
 
@@ -37,6 +44,7 @@ export function SVGPreview() {
 	useEffect(() => {
 		if (!currentImageId || !workerRef.current) {
 			setSvgContent(null);
+			setDetectedColors([]);
 			return;
 		}
 
@@ -64,6 +72,26 @@ export function SVGPreview() {
 		// biome-ignore lint/correctness/useExhaustiveDependencies: setProcessing is stable
 	}, [currentImageId, settings]);
 
+	// Extract colors when SVG content changes
+	useEffect(() => {
+		if (!svgContent) {
+			setDetectedColors([]);
+			return;
+		}
+
+		const colors = new Set<string>();
+		// Match fill attributes (e.g. fill="rgb(10,20,30)" or fill="#aabbcc")
+		const regex = /fill="([^"]+)"/g;
+		let match;
+		// biome-ignore lint/suspicious/noAssignInExpressions: standard regex loop
+		while ((match = regex.exec(svgContent)) !== null) {
+			if (match[1] !== "none") {
+				colors.add(match[1]);
+			}
+		}
+		setDetectedColors(Array.from(colors));
+	}, [svgContent, setDetectedColors]);
+
 	const handleDownload = () => {
 		if (!svgContent) return;
 		const blob = new Blob([svgContent], { type: "image/svg+xml" });
@@ -75,6 +103,16 @@ export function SVGPreview() {
 		a.click();
 		document.body.removeChild(a);
 		URL.revokeObjectURL(url);
+	};
+
+	const handleCopy = async () => {
+		if (!svgContent) return;
+		try {
+			await navigator.clipboard.writeText(svgContent);
+			// Optional: Show toast or feedback? For now just silent success or rely on button state
+		} catch (err) {
+			console.error("Failed to copy:", err);
+		}
 	};
 
 	if (!currentImageId) {
@@ -90,8 +128,29 @@ export function SVGPreview() {
 
 	return (
 		<div className="relative w-full h-full bg-gray-50 dark:bg-zinc-950 overflow-hidden flex flex-col bg-[image:radial-gradient(#e5e7eb_1px,transparent_1px)] dark:bg-[image:radial-gradient(#27272a_1px,transparent_1px)] [background-size:20px_20px]">
+			{/* Dynamic styles for hidden colors and hover effect */}
+			<style>
+				{`
+					.svg-preview-container svg path:hover {
+						stroke: #3b82f6; /* Blue-500 */
+						stroke-width: 2px;
+						vector-effect: non-scaling-stroke;
+					}
+					${hiddenColors.map((color) => `.svg-preview-container path[fill="${color}"] { display: none !important; }`).join("\n")}
+				`}
+			</style>
+
 			{/* Toolbar */}
 			<div className="absolute top-4 right-4 z-10 flex gap-2 bg-background/80 backdrop-blur-md p-2 rounded-lg shadow-sm border">
+				<Button
+					size="icon"
+					variant="ghost"
+					onClick={handleCopy}
+					disabled={!svgContent || processing}
+					title="Copy SVG code"
+				>
+					<Copy className="w-4 h-4" />
+				</Button>
 				<Button
 					size="icon"
 					variant="ghost"
@@ -123,18 +182,29 @@ export function SVGPreview() {
 					{({ zoomIn, zoomOut, resetTransform }) => (
 						<>
 							<div className="absolute bottom-4 right-4 z-10 flex gap-2 bg-background/80 backdrop-blur-md p-2 rounded-lg shadow-sm border">
-								<Button size="icon" variant="ghost" onClick={() => zoomIn()}>
+								<Button
+									size="icon"
+									variant="ghost"
+									onClick={() => zoomIn()}
+									title="Zoom In"
+								>
 									<ZoomIn className="w-4 h-4" />
 								</Button>
-								<Button size="icon" variant="ghost" onClick={() => zoomOut()}>
+								<Button
+									size="icon"
+									variant="ghost"
+									onClick={() => zoomOut()}
+									title="Zoom Out"
+								>
 									<ZoomOut className="w-4 h-4" />
 								</Button>
 								<Button
 									size="icon"
 									variant="ghost"
 									onClick={() => resetTransform()}
+									title="Fit to Screen / Reset"
 								>
-									<RotateCcw className="w-4 h-4" />
+									<Maximize className="w-4 h-4" />
 								</Button>
 							</div>
 
@@ -144,7 +214,7 @@ export function SVGPreview() {
 							>
 								{svgContent ? (
 									<div
-										className="w-full h-full flex items-center justify-center p-8 origin-center"
+										className="w-full h-full flex items-center justify-center p-8 origin-center svg-preview-container"
 										// biome-ignore lint/security/noDangerouslySetInnerHtml: SVG content is safe here
 										dangerouslySetInnerHTML={{ __html: svgContent }}
 										style={{

@@ -27,14 +27,14 @@ export interface VectorizerSettings {
 }
 
 export const defaultSettings: VectorizerSettings = {
-	ltres: 3,
-	qtres: 3,
+	ltres: 4,
+	qtres: 4,
 	pathomit: 8,
 	rightangleenhance: false,
 	colorsampling: 2,
 	numberofcolors: 8,
 	mincolorratio: 0,
-	colorquantcycles: 3,
+	colorquantcycles: 1,
 	layering: 0,
 	strokewidth: 1,
 	linefilter: false,
@@ -54,12 +54,16 @@ interface AppState {
 	processing: boolean;
 	progress: number;
 	settings: VectorizerSettings;
+	detectedColors: string[];
+	hiddenColors: string[];
 
 	setCurrentImageId: (id: number | null) => void;
 	setProcessing: (processing: boolean) => void;
 	setProgress: (progress: number) => void;
 	updateSettings: (settings: Partial<VectorizerSettings>) => void;
 	resetSettings: () => void;
+	setDetectedColors: (colors: string[]) => void;
+	toggleHiddenColor: (color: string) => void;
 }
 
 export const useAppStore = create<AppState>((set) => ({
@@ -67,6 +71,8 @@ export const useAppStore = create<AppState>((set) => ({
 	processing: false,
 	progress: 0,
 	settings: defaultSettings,
+	detectedColors: [],
+	hiddenColors: [],
 
 	setCurrentImageId: (id) => set({ currentImageId: id }),
 	setProcessing: (processing) => set({ processing }),
@@ -76,4 +82,15 @@ export const useAppStore = create<AppState>((set) => ({
 			settings: { ...state.settings, ...newSettings },
 		})),
 	resetSettings: () => set({ settings: defaultSettings }),
+	setDetectedColors: (colors) => set({ detectedColors: colors }),
+	toggleHiddenColor: (color) =>
+		set((state) => {
+			const hidden = new Set(state.hiddenColors);
+			if (hidden.has(color)) {
+				hidden.delete(color);
+			} else {
+				hidden.add(color);
+			}
+			return { hiddenColors: Array.from(hidden) };
+		}),
 }));

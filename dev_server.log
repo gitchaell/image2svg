@@ -2,75 +2,37 @@
 > astro-template@1.0.0 dev
 > astro dev
 
-▶ Astro collects anonymous usage data.
-  This information helps us improve Astro.
-  Run "astro telemetry disable" to opt-out.
-  https://astro.build/telemetry
+12:40:03 [types] Generated 1ms
+12:40:04 [content] Syncing content
+12:40:04 [content] Synced content
+12:40:04 [vite] Port 4321 is in use, trying another one...
+12:40:04 [vite] Port 4322 is in use, trying another one...
 
-23:40:42 [types] Generated 0ms
-23:40:42 [content] Syncing content
-23:40:42 [content] Synced content
+ astro  v5.5.2 ready in 768 ms
 
- astro  v5.5.2 ready in 921 ms
-
-┃ Local    http://localhost:4321/
+┃ Local    http://localhost:4323/
 ┃ Network  use --host to expose
 
-23:40:42 watching for file changes...
-
- update  ▶ New version of Astro available: 5.17.3
-  Run npx @astrojs/upgrade to update
-
-23:41:59 [200] / 583ms
-23:42:00 [200] /en 43ms
-23:42:00 [watch] dev_server.log
-23:42:00 [watch] dev_server.log
-23:42:02 [vite] ✨ new dependencies optimized: imagetracerjs
-23:42:02 [vite] ✨ optimized dependencies changed. reloading
-23:42:02 [watch] dev_server.log
-23:42:02 [watch] dev_server.log
-23:42:03 [200] /en 23ms
-23:42:03 [watch] dev_server.log
-23:42:03 [watch] dev_server.log
-23:42:06 [200] /en 17ms
-23:42:06 [watch] dev_server.log
-23:42:06 [watch] dev_server.log
-23:43:21 Configuration file updated. Restarting...
-23:43:21 [watch] astro.config.mjs
-23:43:21 [watch] astro.config.mjs
-23:43:21 [watch] dev_server.log
-23:43:21 [watch] dev_server.log
-23:43:21 [watch] /src/styles/global.css
-23:43:21 [watch] /src/components/shared/LanguageSelector.tsx, /src/styles/global.css
-23:43:21 [watch] src/components/shared/LanguageSelector.tsx
-23:43:21 [watch] /src/components/ui/button.tsx, /src/styles/global.css
-23:43:21 [watch] src/components/ui/button.tsx
-23:43:21 [watch] /src/components/shared/ThemeToggle.tsx, /src/styles/global.css
-23:43:21 [watch] src/components/shared/ThemeToggle.tsx
-23:43:21 [watch] /src/components/ui/slider.tsx, /src/styles/global.css
-23:43:21 [watch] src/components/ui/slider.tsx
-23:43:21 [watch] /src/components/ui/switch.tsx, /src/styles/global.css
-23:43:21 [watch] src/components/ui/switch.tsx
-23:43:21 [watch] /src/components/ui/tabs.tsx, /src/styles/global.css
-23:43:21 [watch] src/components/ui/tabs.tsx
-23:43:21 [watch] dev_server.log
-23:43:21 [watch] dev_server.log
-23:43:21 [watch] /src/components/ui/label.tsx, /src/styles/global.css
-23:43:21 [watch] src/components/ui/label.tsx
-23:43:21 [watch] /src/components/vectorizer/ControlPanel.tsx, /src/styles/global.css
-23:43:21 [watch] src/components/vectorizer/ControlPanel.tsx
-23:43:21 [watch] /src/components/vectorizer/HistorySidebar.tsx, /src/styles/global.css
-23:43:21 [watch] src/components/vectorizer/HistorySidebar.tsx
-23:43:21 [watch] /src/components/vectorizer/SVGPreview.tsx, /src/styles/global.css
-23:43:21 [watch] src/components/vectorizer/SVGPreview.tsx
-23:43:21 [watch] /src/components/vectorizer/UploadZone.tsx, /src/styles/global.css
-23:43:21 [watch] src/components/vectorizer/UploadZone.tsx
-23:43:21 [watch] /src/styles/global.css, /src/components/shared/LanguageSelector.tsx
-23:43:21 [watch] src/i18n/ui.ts
-23:43:21 [watch] /src/components/vectorizer/VectorApp.tsx, /src/styles/global.css
-23:43:21 [watch] src/components/vectorizer/VectorApp.tsx
-23:43:21 [vite] Re-optimizing dependencies because vite config has changed
-23:43:21 [content] Syncing content
-23:43:21 [content] Synced content
-23:43:21 [types] Generated 305ms
-23:43:21 [vite] Re-optimizing dependencies because vite config has changed
+12:40:04 watching for file changes...
+12:40:28 [200] / 390ms
+12:40:28 [200] /en 40ms
+12:40:29 [watch] dev_server.log
+12:40:29 [watch] dev_server.log
+12:40:31 [vite] ✨ new dependencies optimized: imagetracerjs
+12:40:31 [vite] ✨ optimized dependencies changed. reloading
+12:40:31 [watch] dev_server.log
+12:40:31 [watch] dev_server.log
+12:40:31 [200] /en 19ms
+12:40:31 [watch] dev_server.log
+12:40:31 [watch] dev_server.log
+12:40:40 [200] / 15ms
+12:40:40 [watch] dev_server.log
+12:40:40 [watch] dev_server.log
+12:40:40 [200] /en 27ms
+12:40:40 [200] /en 9ms
+12:40:40 [watch] dev_server.log
+12:40:40 [watch] dev_server.log
+12:41:21 [watch] verify_changes.py
+12:41:21 [watch] verify_changes.py
+12:41:21 [watch] dev_server.log
+12:41:21 [watch] dev_server.log
