@@ -1,8 +1,15 @@
-import { Copy, Download, Maximize, ZoomIn, ZoomOut } from "lucide-react";
+import { Code, Copy, Download, Maximize, ZoomIn, ZoomOut } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import { TransformComponent, TransformWrapper } from "react-zoom-pan-pinch";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import {
+	Dialog,
+	DialogContent,
+	DialogHeader,
+	DialogTitle,
+	DialogTrigger,
+} from "@/components/ui/dialog";
 import { db } from "@/lib/db";
 import { useAppStore } from "@/store/appStore";
 
@@ -17,6 +24,7 @@ export function SVGPreview() {
 	} = useAppStore();
 	const [svgContent, setSvgContent] = useState<string | null>(null);
 	const workerRef = useRef<Worker | null>(null);
+	const containerRef = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
 		// Initialize worker
@@ -151,6 +159,33 @@ export function SVGPreview() {
 
 			{/* Toolbar */}
 			<div className="absolute top-4 right-4 z-10 flex gap-2 bg-background/80 backdrop-blur-md p-2 rounded-lg shadow-sm border">
+				<Dialog>
+					<DialogTrigger asChild>
+						<Button
+							size="icon"
+							variant="ghost"
+							disabled={!svgContent || processing}
+							title="View SVG code"
+						>
+							<Code className="w-4 h-4" />
+						</Button>
+					</DialogTrigger>
+					<DialogContent className="max-w-2xl max-h-[80vh] flex flex-col">
+						<DialogHeader>
+							<DialogTitle>SVG Code</DialogTitle>
+						</DialogHeader>
+						<div className="flex-1 min-h-0 border rounded-md bg-muted/50 p-4 overflow-auto">
+							<code className="text-xs break-all whitespace-pre-wrap font-mono">
+								{svgContent}
+							</code>
+						</div>
+						<Button onClick={handleCopy} className="gap-2">
+							<Copy className="w-4 h-4" />
+							Copy to Clipboard
+						</Button>
+					</DialogContent>
+				</Dialog>
+
 				<Button
 					size="icon"
 					variant="ghost"
@@ -171,7 +206,7 @@ export function SVGPreview() {
 				</Button>
 			</div>
 
-			<div className="flex-1 relative w-full h-full">
+			<div className="flex-1 relative w-full h-full" ref={containerRef}>
 				{processing && (
 					<div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-background/50 backdrop-blur-sm">
 						<div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mb-2"></div>
@@ -188,60 +223,102 @@ export function SVGPreview() {
 					centerOnInit
 					limitToBounds={false}
 				>
-					{({ zoomIn, zoomOut, resetTransform }) => (
-						<>
-							<div className="absolute bottom-4 right-4 z-10 flex gap-2 bg-background/80 backdrop-blur-md p-2 rounded-lg shadow-sm border">
-								<Button
-									size="icon"
-									variant="ghost"
-									onClick={() => zoomIn()}
-									title="Zoom In"
-								>
-									<ZoomIn className="w-4 h-4" />
-								</Button>
-								<Button
-									size="icon"
-									variant="ghost"
-									onClick={() => zoomOut()}
-									title="Zoom Out"
-								>
-									<ZoomOut className="w-4 h-4" />
-								</Button>
-								<Button
-									size="icon"
-									variant="ghost"
-									onClick={() => resetTransform()}
-									title="Fit to Screen"
-								>
-									<Maximize className="w-4 h-4" />
-								</Button>
-							</div>
+					{({ zoomIn, zoomOut, resetTransform, centerView }) => {
+						const handleFitToScreen = () => {
+							if (!svgContent || !containerRef.current) {
+								resetTransform();
+								return;
+							}
 
-							<TransformComponent
-								wrapperClass="w-full h-full cursor-move"
-								contentClass="w-full h-full flex items-center justify-center"
-							>
-								{svgContent ? (
-									<div
-										className="w-full h-full flex items-center justify-center p-8 origin-center svg-preview-container"
-										// biome-ignore lint/security/noDangerouslySetInnerHtml: SVG content is safe here
-										dangerouslySetInnerHTML={{ __html: svgContent }}
-										style={{
-											maxWidth: "100%",
-											maxHeight: "100%",
-											shapeRendering: "optimizeSpeed",
-										}}
-									/>
-								) : (
-									!processing && (
-										<div className="text-muted-foreground">
-											Waiting for result...
-										</div>
-									)
-								)}
-							</TransformComponent>
-						</>
-					)}
+							// Try to extract viewBox or width/height
+							const viewBoxMatch = svgContent.match(/viewBox="([^"]+)"/);
+							let svgW = 0;
+							let svgH = 0;
+
+							if (viewBoxMatch) {
+								const parts = viewBoxMatch[1].split(/\s+|,/).map(Number);
+								if (parts.length === 4) {
+									svgW = parts[2];
+									svgH = parts[3];
+								}
+							} else {
+								const wMatch = svgContent.match(/width="([^"]+)"/);
+								const hMatch = svgContent.match(/height="([^"]+)"/);
+								if (wMatch && hMatch) {
+									svgW = parseFloat(wMatch[1]);
+									svgH = parseFloat(hMatch[1]);
+								}
+							}
+
+							if (svgW > 0 && svgH > 0) {
+								const container = containerRef.current.getBoundingClientRect();
+								const scaleX = (container.width - 64) / svgW; // 64px padding
+								const scaleY = (container.height - 64) / svgH;
+								const scale = Math.min(scaleX, scaleY);
+
+								if (scale > 0 && Number.isFinite(scale)) {
+									centerView(scale, 0);
+									return;
+								}
+							}
+							resetTransform();
+						};
+
+						return (
+							<>
+								<div className="absolute bottom-4 right-4 z-10 flex gap-2 bg-background/80 backdrop-blur-md p-2 rounded-lg shadow-sm border">
+									<Button
+										size="icon"
+										variant="ghost"
+										onClick={() => zoomIn()}
+										title="Zoom In"
+									>
+										<ZoomIn className="w-4 h-4" />
+									</Button>
+									<Button
+										size="icon"
+										variant="ghost"
+										onClick={() => zoomOut()}
+										title="Zoom Out"
+									>
+										<ZoomOut className="w-4 h-4" />
+									</Button>
+									<Button
+										size="icon"
+										variant="ghost"
+										onClick={handleFitToScreen}
+										title="Fit to Screen"
+									>
+										<Maximize className="w-4 h-4" />
+									</Button>
+								</div>
+
+								<TransformComponent
+									wrapperClass="w-full h-full cursor-move"
+									contentClass="w-full h-full flex items-center justify-center"
+								>
+									{svgContent ? (
+										<div
+											className="w-full h-full flex items-center justify-center p-8 origin-center svg-preview-container"
+											// biome-ignore lint/security/noDangerouslySetInnerHtml: SVG content is safe here
+											dangerouslySetInnerHTML={{ __html: svgContent }}
+											style={{
+												maxWidth: "100%",
+												maxHeight: "100%",
+												shapeRendering: "optimizeSpeed",
+											}}
+										/>
+									) : (
+										!processing && (
+											<div className="text-muted-foreground">
+												Waiting for result...
+											</div>
+										)
+									)}
+								</TransformComponent>
+							</>
+						);
+					}}
 				</TransformWrapper>
 			</div>
 		</div>

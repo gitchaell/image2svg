@@ -1,6 +1,6 @@
 import ImageTracer from "imagetracerjs";
 
-// Helper function for box blur
+// Helper function for box blur (kept for reference or fallback)
 function boxBlur(
 	imageData: ImageData,
 	width: number,
@@ -11,8 +11,6 @@ function boxBlur(
 
 	const pixels = imageData.data;
 	const len = pixels.length;
-	const side = radius * 2 + 1;
-	const range = side * side;
 	// Use a Float32Array to avoid overflow during accumulation
 	const temp = new Float32Array(len);
 
@@ -71,20 +69,138 @@ function boxBlur(
 	}
 }
 
-// Simple color quantization (posterization)
-function quantize(imageData: ImageData, levels: number) {
-	if (levels <= 0) return;
-	// If levels is e.g. 4, we want values 0, 64, 128, 192, 255 roughly?
-	// The step size is 255 / levels.
-	// Actually, levels usually means "colors per channel".
-	// If levels=0, no quantization.
-	const step = 255 / levels;
+// Median filter for noise reduction (salt-and-pepper)
+function medianFilter(
+	imageData: ImageData,
+	width: number,
+	height: number,
+	radius: number,
+) {
+	if (radius < 1) return;
+	const pixels = imageData.data;
+	const newPixels = new Uint8ClampedArray(pixels.length);
+
+	// Pre-allocate arrays for sorting
+	const size = (2 * radius + 1) * (2 * radius + 1);
+	const rArr = new Uint8Array(size);
+	const gArr = new Uint8Array(size);
+	const bArr = new Uint8Array(size);
+	const aArr = new Uint8Array(size);
+	const mid = Math.floor(size / 2);
+
+	for (let y = 0; y < height; y++) {
+		for (let x = 0; x < width; x++) {
+			let i = 0;
+			for (let dy = -radius; dy <= radius; dy++) {
+				for (let dx = -radius; dx <= radius; dx++) {
+					const ny = Math.min(Math.max(y + dy, 0), height - 1);
+					const nx = Math.min(Math.max(x + dx, 0), width - 1);
+					const idx = (ny * width + nx) * 4;
+					rArr[i] = pixels[idx];
+					gArr[i] = pixels[idx + 1];
+					bArr[i] = pixels[idx + 2];
+					aArr[i] = pixels[idx + 3];
+					i++;
+				}
+			}
+			rArr.sort();
+			gArr.sort();
+			bArr.sort();
+			aArr.sort();
+
+			const idx = (y * width + x) * 4;
+			newPixels[idx] = rArr[mid];
+			newPixels[idx + 1] = gArr[mid];
+			newPixels[idx + 2] = bArr[mid];
+			newPixels[idx + 3] = aArr[mid];
+		}
+	}
+
+	pixels.set(newPixels);
+}
+
+// K-Means Color Quantization
+function kMeansQuantize(imageData: ImageData, k: number) {
+	if (k < 2) return;
 	const data = imageData.data;
+	const pixelCount = data.length / 4;
+
+	// 1. Initialize centroids randomly from pixels
+	const centroids = [];
+	for (let i = 0; i < k; i++) {
+		const idx = Math.floor(Math.random() * pixelCount) * 4;
+		centroids.push([data[idx], data[idx + 1], data[idx + 2]]);
+	}
+
+	// 2. Iterate (fixed iterations for speed, e.g., 5)
+	const iterations = 5;
+	for (let iter = 0; iter < iterations; iter++) {
+		const sums = Array(k).fill(0).map(() => [0, 0, 0]);
+		const counts = Array(k).fill(0);
+
+		for (let i = 0; i < data.length; i += 4) {
+			const r = data[i];
+			const g = data[i + 1];
+			const b = data[i + 2];
+
+			// Find nearest centroid
+			let minDist = Infinity;
+			let nearest = 0;
+
+			for (let j = 0; j < k; j++) {
+				const dr = r - centroids[j][0];
+				const dg = g - centroids[j][1];
+				const db = b - centroids[j][2];
+				const dist = dr * dr + dg * dg + db * db;
+				if (dist < minDist) {
+					minDist = dist;
+					nearest = j;
+				}
+			}
+
+			sums[nearest][0] += r;
+			sums[nearest][1] += g;
+			sums[nearest][2] += b;
+			counts[nearest]++;
+		}
+
+		// Update centroids
+		let diff = 0;
+		for (let j = 0; j < k; j++) {
+			if (counts[j] > 0) {
+				const nr = sums[j][0] / counts[j];
+				const ng = sums[j][1] / counts[j];
+				const nb = sums[j][2] / counts[j];
+				diff += Math.abs(nr - centroids[j][0]) + Math.abs(ng - centroids[j][1]) + Math.abs(nb - centroids[j][2]);
+				centroids[j] = [nr, ng, nb];
+			}
+		}
+		if (diff < 1) break; // Converged
+	}
+
+	// 3. Assign pixels to final centroids
 	for (let i = 0; i < data.length; i += 4) {
-		data[i] = Math.floor(data[i] / step) * step;
-		data[i + 1] = Math.floor(data[i + 1] / step) * step;
-		data[i + 2] = Math.floor(data[i + 2] / step) * step;
-		// alpha unchanged
+		const r = data[i];
+		const g = data[i + 1];
+		const b = data[i + 2];
+
+		let minDist = Infinity;
+		let nearest = 0;
+
+		for (let j = 0; j < k; j++) {
+			const dr = r - centroids[j][0];
+			const dg = g - centroids[j][1];
+			const db = b - centroids[j][2];
+			const dist = dr * dr + dg * dg + db * db;
+			if (dist < minDist) {
+				minDist = dist;
+				nearest = j;
+			}
+		}
+
+		data[i] = Math.round(centroids[nearest][0]);
+		data[i + 1] = Math.round(centroids[nearest][1]);
+		data[i + 2] = Math.round(centroids[nearest][2]);
 	}
 }
 
@@ -129,14 +245,22 @@ self.onmessage = async (e: MessageEvent) => {
 
 		// Preprocessing
 		if (options.preprocessBlur && options.preprocessBlur > 0) {
-			boxBlur(imageData, width, height, options.preprocessBlur);
+			// Use Median Filter instead of Box Blur for better edge preservation
+			// If radius is large, fallback to Box Blur or iterate?
+			// Median filter is O(r^2), so for large r it's slow.
+			// Limit r to 5 max for Median, otherwise use Box.
+			if (options.preprocessBlur <= 5) {
+				medianFilter(imageData, width, height, options.preprocessBlur);
+			} else {
+				boxBlur(imageData, width, height, options.preprocessBlur);
+			}
 		}
 
 		if (options.preprocessQuantize && options.preprocessQuantize > 0) {
-			// Interpret quantize as "number of levels per channel" or similar factor
-			// Let's use it as a divisor for simplicity or mapped levels
-			// e.g. if quantize is 4, we have 4 levels per channel.
-			quantize(imageData, options.preprocessQuantize);
+			// Use K-Means with K = preprocessQuantize (if > 1)
+			// If 1, ignore? If > 16 (slider max is 16), clip.
+			const k = Math.min(Math.max(2, Math.round(options.preprocessQuantize)), 32);
+			kMeansQuantize(imageData, k);
 		}
 
 		// Process
