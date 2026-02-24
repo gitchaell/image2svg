@@ -21,6 +21,6 @@ function t(key: keyof (typeof ui)[typeof defaultLang]) {
 	lang={lang}
 >
 	<div class="fixed inset-0 z-0 bg-background">
-		<VectorApp client:only="react" />
+		<VectorApp client:only="react" lang={lang as any} />
 	</div>
 </Layout>

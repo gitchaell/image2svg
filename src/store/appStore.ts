@@ -49,8 +49,8 @@ export const defaultSettings: VectorizerSettings = {
 	blurradius: 0,
 	blurdelta: 20,
 	outputScale: 1,
-	preprocessBlur: 0,
-	preprocessQuantize: 0,
+	preprocessBlur: 1,
+	preprocessQuantize: 1,
 };
 
 interface AppState {

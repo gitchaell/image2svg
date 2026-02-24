@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import type React from "react";
 import { useEffect, useState } from "react";
+import { useI18n } from "@/components/shared/I18nContext";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
@@ -21,6 +22,7 @@ import { db } from "@/lib/db";
 import { useAppStore, type VectorizerSettings } from "@/store/appStore";
 
 export function ControlPanel() {
+	const t = useI18n();
 	const {
 		settings,
 		updateSettings,
@@ -182,15 +184,15 @@ export function ControlPanel() {
 
 	return (
 		<div className="flex flex-col h-full bg-background border-l">
-			<div className="flex items-center justify-between p-4 border-b shrink-0 bg-card">
-				<h2 className="text-lg font-semibold">Settings</h2>
+			<div className="h-14 flex items-center justify-between px-4 border-b shrink-0 bg-card">
+				<h2 className="text-lg font-semibold">{t("settings.title")}</h2>
 				<div className="flex gap-1">
 					<Button
 						variant="ghost"
 						size="icon"
 						onClick={handleMagic}
 						disabled={!currentImageId}
-						title="Auto-detect best settings"
+						title={t("settings.auto_detect")}
 					>
 						<Sparkles className="h-4 w-4" />
 					</Button>
@@ -198,7 +200,7 @@ export function ControlPanel() {
 						variant="ghost"
 						size="icon"
 						onClick={handleReset}
-						title="Reset to defaults"
+						title={t("settings.reset")}
 					>
 						<RotateCcw className="h-4 w-4" />
 					</Button>
@@ -207,15 +209,15 @@ export function ControlPanel() {
 
 			<div className="flex-1 overflow-y-auto px-4">
 				{/* Preprocessing Settings */}
-				<Section title="Preprocessing">
+				<Section title={t("section.preprocessing")}>
 					<div className="space-y-4">
 						<p className="text-xs text-muted-foreground">
-							Clean up grainy images before vectorizing.
+							{t("section.preprocessing.desc")}
 						</p>
 						<div className="space-y-2">
 							<LabelWithTooltip
-								label="Denoise Blur"
-								tooltip="Applies a blur to smooth out grain and noise before processing. Higher values remove more noise but lose detail."
+								label={t("param.denoise_blur")}
+								tooltip={t("param.denoise_blur.tooltip")}
 								value={localSettings.preprocessBlur}
 							/>
 							<Slider
@@ -229,8 +231,8 @@ export function ControlPanel() {
 
 						<div className="space-y-2">
 							<LabelWithTooltip
-								label="Simplify Colors"
-								tooltip="Reduces the number of colors (posterization) before processing. Helps merge similar colors and reduce path count."
+								label={t("param.simplify_colors")}
+								tooltip={t("param.simplify_colors.tooltip")}
 								value={localSettings.preprocessQuantize}
 							/>
 							<Slider
@@ -247,12 +249,12 @@ export function ControlPanel() {
 				</Section>
 
 				{/* Color Settings */}
-				<Section title="Color">
+				<Section title={t("section.color")}>
 					<div className="space-y-4">
 						<div className="space-y-2">
 							<LabelWithTooltip
-								label="Number of Colors"
-								tooltip="Target number of colors in the palette. More colors means more detail but larger file size."
+								label={t("param.number_of_colors")}
+								tooltip={t("param.number_of_colors.tooltip")}
 								value={localSettings.numberofcolors}
 							/>
 							<Slider
@@ -267,14 +269,14 @@ export function ControlPanel() {
 						{detectedColors.length > 0 && (
 							<div className="space-y-2 pt-4 border-t">
 								<div className="flex items-center justify-between mb-2">
-									<Label>Detected Colors</Label>
+									<Label>{t("param.detected_colors")}</Label>
 									<div className="flex gap-1">
 										<Button
 											variant="ghost"
 											size="icon"
 											className="h-6 w-6"
 											onClick={() => toggleAllColors(true)}
-											title="Show All"
+											title={t("param.show_all")}
 										>
 											<Eye className="h-3 w-3" />
 										</Button>
@@ -283,7 +285,7 @@ export function ControlPanel() {
 											size="icon"
 											className="h-6 w-6"
 											onClick={() => toggleAllColors(false)}
-											title="Hide All"
+											title={t("param.hide_all")}
 										>
 											<EyeOff className="h-3 w-3" />
 										</Button>
@@ -303,8 +305,8 @@ export function ControlPanel() {
 											onClick={() => toggleHiddenColor(color)}
 											title={
 												hiddenColors.includes(color)
-													? `Show ${color}`
-													: `Hide ${color}`
+													? `${t("param.show_color")} ${color}`
+													: `${t("param.hide_color")} ${color}`
 											}
 										/>
 									))}
@@ -314,8 +316,8 @@ export function ControlPanel() {
 
 						<div className="space-y-2">
 							<LabelWithTooltip
-								label="Min Color Ratio"
-								tooltip="Ignore colors that occupy less than this percentage of the image."
+								label={t("param.min_color_ratio")}
+								tooltip={t("param.min_color_ratio.tooltip")}
 								value={localSettings.mincolorratio}
 							/>
 							<Slider
@@ -329,8 +331,8 @@ export function ControlPanel() {
 
 						<div className="space-y-2">
 							<LabelWithTooltip
-								label="Color Quant Cycles"
-								tooltip="Number of times to refine the color palette. Higher values are slower but yield better color matching."
+								label={t("param.color_quant_cycles")}
+								tooltip={t("param.color_quant_cycles.tooltip")}
 								value={localSettings.colorquantcycles}
 							/>
 							<Slider
@@ -347,12 +349,12 @@ export function ControlPanel() {
 				</Section>
 
 				{/* Detail Settings */}
-				<Section title="Detail">
+				<Section title={t("section.detail")}>
 					<div className="space-y-4">
 						<div className="space-y-2">
 							<LabelWithTooltip
-								label="Path Omit (px)"
-								tooltip="Ignore paths (shapes) smaller than this pixel size. Reduces noise."
+								label={t("param.path_omit")}
+								tooltip={t("param.path_omit.tooltip")}
 								value={localSettings.pathomit}
 							/>
 							<Slider
@@ -366,8 +368,8 @@ export function ControlPanel() {
 
 						<div className="space-y-2">
 							<LabelWithTooltip
-								label="Linear Trace Precision"
-								tooltip="Error threshold for linear path tracing. Lower values mean more precise lines but more points."
+								label={t("param.ltres")}
+								tooltip={t("param.ltres.tooltip")}
 								value={localSettings.ltres}
 							/>
 							<Slider
@@ -381,8 +383,8 @@ export function ControlPanel() {
 
 						<div className="space-y-2">
 							<LabelWithTooltip
-								label="Quadratic Spline Precision"
-								tooltip="Error threshold for curve fitting. Lower values mean smoother curves but more points."
+								label={t("param.qtres")}
+								tooltip={t("param.qtres.tooltip")}
 								value={localSettings.qtres}
 							/>
 							<Slider
@@ -396,13 +398,13 @@ export function ControlPanel() {
 
 						<div className="flex items-center justify-between">
 							<div className="flex items-center gap-2">
-								<Label htmlFor="enhance">Right Angle Enhance</Label>
+								<Label htmlFor="enhance">{t("param.right_angle_enhance")}</Label>
 								<Tooltip delayDuration={300}>
 									<TooltipTrigger asChild>
 										<Info className="h-3 w-3 text-muted-foreground cursor-help" />
 									</TooltipTrigger>
 									<TooltipContent side="right">
-										<p>Attempts to sharpen corners to 90 degrees.</p>
+										<p>{t("param.right_angle_enhance.tooltip")}</p>
 									</TooltipContent>
 								</Tooltip>
 							</div>
@@ -418,12 +420,12 @@ export function ControlPanel() {
 				</Section>
 
 				{/* Render Settings */}
-				<Section title="Render">
+				<Section title={t("section.render")}>
 					<div className="space-y-4">
 						<div className="space-y-2">
 							<LabelWithTooltip
-								label="Blur Radius"
-								tooltip="Applies a blur to the generated SVG paths."
+								label={t("param.blur_radius")}
+								tooltip={t("param.blur_radius.tooltip")}
 								value={localSettings.blurradius}
 							/>
 							<Slider
@@ -436,8 +438,8 @@ export function ControlPanel() {
 						</div>
 						<div className="space-y-2">
 							<LabelWithTooltip
-								label="Blur Delta"
-								tooltip="The standard deviation for the Gaussian blur."
+								label={t("param.blur_delta")}
+								tooltip={t("param.blur_delta.tooltip")}
 								value={localSettings.blurdelta}
 							/>
 							<Slider
@@ -451,8 +453,8 @@ export function ControlPanel() {
 
 						<div className="space-y-2">
 							<LabelWithTooltip
-								label="Stroke Width"
-								tooltip="Width of the stroke around filled shapes."
+								label={t("param.stroke_width")}
+								tooltip={t("param.stroke_width.tooltip")}
 								value={localSettings.strokewidth}
 							/>
 							<Slider
@@ -466,8 +468,8 @@ export function ControlPanel() {
 
 						<div className="space-y-2">
 							<LabelWithTooltip
-								label="Output Scale"
-								tooltip="Scale factor for the final SVG output dimensions."
+								label={t("param.output_scale")}
+								tooltip={t("param.output_scale.tooltip")}
 								value={`${localSettings.outputScale}x`}
 							/>
 							<Slider
@@ -480,7 +482,7 @@ export function ControlPanel() {
 						</div>
 
 						<div className="flex items-center justify-between">
-							<Label htmlFor="viewbox">Use Viewbox</Label>
+							<Label htmlFor="viewbox">{t("param.use_viewbox")}</Label>
 							<Switch
 								id="viewbox"
 								checked={localSettings.viewbox}
@@ -493,7 +495,7 @@ export function ControlPanel() {
 
 			<div className="p-4 border-t bg-background shrink-0">
 				<Button className="w-full" onClick={handleApply} disabled={!isDirty}>
-					Apply Changes
+					{t("settings.apply")}
 				</Button>
 			</div>
 		</div>

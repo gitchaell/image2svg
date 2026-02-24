@@ -1,12 +1,14 @@
 import { Upload } from "lucide-react";
 import type React from "react";
 import { useState } from "react";
+import { useI18n } from "@/components/shared/I18nContext";
 import { Card } from "@/components/ui/card";
 import { db } from "@/lib/db";
 import { cn } from "@/lib/utils";
 import { useAppStore } from "@/store/appStore";
 
 export function UploadZone() {
+	const t = useI18n();
 	const setCurrentImageId = useAppStore((state) => state.setCurrentImageId);
 	const [isDragOver, setIsDragOver] = useState(false);
 
@@ -54,12 +56,8 @@ export function UploadZone() {
 		>
 			<Upload className="w-12 h-12 text-muted-foreground mb-4" />
 			<div className="text-center space-y-2">
-				<h3 className="text-lg font-medium">
-					Click to upload or drag and drop
-				</h3>
-				<p className="text-sm text-muted-foreground">
-					SVG, PNG, JPG or GIF (max. 100MB)
-				</p>
+				<h3 className="text-lg font-medium">{t("upload.title")}</h3>
+				<p className="text-sm text-muted-foreground">{t("upload.desc")}</p>
 			</div>
 			<input
 				id="file-upload"
