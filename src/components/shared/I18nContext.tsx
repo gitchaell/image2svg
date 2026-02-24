@@ -1,5 +1,5 @@
 import { type defaultLang, ui } from "@/i18n/ui";
-import { createContext, useContext } from "react";
+import { createContext, useCallback, useContext } from "react";
 
 type Lang = keyof typeof ui;
 type Keys = keyof (typeof ui)[typeof defaultLang];
@@ -16,8 +16,11 @@ export function I18nProvider({
 export function useI18n() {
 	const lang = useContext(I18nContext);
 
-	return function t(key: Keys) {
-		const translation = ui[lang]?.[key] || ui["en"][key];
-		return translation || key;
-	};
+	return useCallback(
+		function t(key: Keys) {
+			const translation = ui[lang]?.[key] || ui["en"][key];
+			return translation || key;
+		},
+		[lang],
+	);
 }
