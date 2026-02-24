@@ -1,9 +1,9 @@
-import React, { useRef, useEffect, useState } from "react";
-import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
-import { useAppStore } from "@/store/appStore";
+import { Download, RotateCcw, ZoomIn, ZoomOut } from "lucide-react";
+import React, { useEffect, useRef, useState } from "react";
+import { TransformComponent, TransformWrapper } from "react-zoom-pan-pinch";
 import { Button } from "@/components/ui/button";
-import { Download, ZoomIn, ZoomOut, RotateCcw } from "lucide-react";
 import { db } from "@/lib/db";
+import { useAppStore } from "@/store/appStore";
 
 export function SVGPreview() {
 	const { currentImageId, settings, setProcessing, processing } = useAppStore();
@@ -31,6 +31,7 @@ export function SVGPreview() {
 		return () => {
 			workerRef.current?.terminate();
 		};
+		// biome-ignore lint/correctness/useExhaustiveDependencies: setProcessing is stable
 	}, []);
 
 	useEffect(() => {
@@ -60,6 +61,7 @@ export function SVGPreview() {
 		// Debounce processing to avoid spamming worker on slider change
 		const timeoutId = setTimeout(processImage, 500);
 		return () => clearTimeout(timeoutId);
+		// biome-ignore lint/correctness/useExhaustiveDependencies: setProcessing is stable
 	}, [currentImageId, settings]);
 
 	const handleDownload = () => {
@@ -87,13 +89,7 @@ export function SVGPreview() {
 	}
 
 	return (
-		<div
-			className="relative w-full h-full bg-background overflow-hidden flex flex-col"
-			style={{
-				backgroundImage: "radial-gradient(#e5e7eb 1px, transparent 1px)",
-				backgroundSize: "20px 20px",
-			}}
-		>
+		<div className="relative w-full h-full bg-gray-50 dark:bg-zinc-950 overflow-hidden flex flex-col bg-[image:radial-gradient(#e5e7eb_1px,transparent_1px)] dark:bg-[image:radial-gradient(#27272a_1px,transparent_1px)] [background-size:20px_20px]">
 			{/* Toolbar */}
 			<div className="absolute top-4 right-4 z-10 flex gap-2 bg-background/80 backdrop-blur-md p-2 rounded-lg shadow-sm border">
 				<Button
@@ -149,6 +145,7 @@ export function SVGPreview() {
 								{svgContent ? (
 									<div
 										className="w-full h-full flex items-center justify-center p-8 origin-center"
+										// biome-ignore lint/security/noDangerouslySetInnerHtml: SVG content is safe here
 										dangerouslySetInnerHTML={{ __html: svgContent }}
 										style={{
 											maxWidth: "100%",

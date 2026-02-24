@@ -1,10 +1,10 @@
 import { useLiveQuery } from "dexie-react-hooks";
-import { db } from "@/lib/db";
-import { useAppStore } from "@/store/appStore";
-import { Button } from "@/components/ui/button";
-import { Trash2, Image as ImageIcon } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { Image as ImageIcon, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { db } from "@/lib/db";
+import { cn } from "@/lib/utils";
+import { useAppStore } from "@/store/appStore";
 
 function ImageThumbnail({ blob }: { blob: Blob }) {
 	const [url, setUrl] = useState<string>("");

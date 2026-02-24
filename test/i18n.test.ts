@@ -3,12 +3,12 @@ import { useTranslations } from "@/i18n/utils";
 
 test("useTranslations returns correct string for default lang", () => {
 	const t = useTranslations("en");
-	expect(t("site.title")).toBe("Astro Template");
+	expect(t("site.title")).toBe("image2svg");
 });
 
 test("useTranslations returns correct string for other lang", () => {
 	const t = useTranslations("es");
-	expect(t("site.title")).toBe("Plantilla Astro");
+	expect(t("site.title")).toBe("image2svg");
 });
 
 test("useTranslations falls back to default lang", () => {
@@ -21,5 +21,5 @@ test("useTranslations falls back to default lang", () => {
 	// Let's test if we pass a lang that doesn't exist (though typescript prevents it, runtime might not)
 	// Actually our type is keyof typeof ui.
 
-	expect(t("site.title")).toBe("Astro Template");
+	expect(t("site.title")).toBe("image2svg");
 });

@@ -1,9 +1,10 @@
-import React, { useState } from "react";
-import { useAppStore } from "@/store/appStore";
-import { db } from "@/lib/db";
-import { Card } from "@/components/ui/card";
 import { Upload } from "lucide-react";
+import type React from "react";
+import { useState } from "react";
+import { Card } from "@/components/ui/card";
+import { db } from "@/lib/db";
 import { cn } from "@/lib/utils";
+import { useAppStore } from "@/store/appStore";
 
 export function UploadZone() {
 	const setCurrentImageId = useAppStore((state) => state.setCurrentImageId);
