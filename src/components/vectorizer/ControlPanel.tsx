@@ -1,4 +1,11 @@
-import { ChevronDown, Info, RotateCcw, Sparkles, Eye, EyeOff } from "lucide-react";
+import {
+	ChevronDown,
+	Eye,
+	EyeOff,
+	Info,
+	RotateCcw,
+	Sparkles,
+} from "lucide-react";
 import type React from "react";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -103,7 +110,11 @@ export function ControlPanel() {
 		label,
 		tooltip,
 		value,
-	}: { label: string; tooltip: string; value?: React.ReactNode }) => (
+	}: {
+		label: string;
+		tooltip: string;
+		value?: React.ReactNode;
+	}) => (
 		<div className="flex items-center justify-between">
 			<div className="flex items-center gap-2">
 				<Label className="cursor-help">{label}</Label>
