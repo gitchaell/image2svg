@@ -63,33 +63,62 @@ export function ControlPanel() {
 			const image = await db.images.get(currentImageId);
 			if (!image) return;
 
-			// Get image dimensions
+			// Get image dimensions and sample for complexity
 			const bitmap = await createImageBitmap(image.originalBlob);
 			const { width, height } = bitmap;
 			const pixelCount = width * height;
 
-			const newSettings = { ...localSettings };
+			// Create a small canvas to analyze colors
+			const canvas = new OffscreenCanvas(100, 100);
+			const ctx = canvas.getContext("2d");
+			if (ctx) {
+				ctx.drawImage(bitmap, 0, 0, 100, 100);
+				const imageData = ctx.getImageData(0, 0, 100, 100);
+				const uniqueColors = new Set();
+				for (let i = 0; i < imageData.data.length; i += 4) {
+					const r = Math.round(imageData.data[i] / 10) * 10;
+					const g = Math.round(imageData.data[i + 1] / 10) * 10;
+					const b = Math.round(imageData.data[i + 2] / 10) * 10;
+					uniqueColors.add(`${r},${g},${b}`);
+				}
 
-			// Simple heuristics
-			if (pixelCount > 2000 * 2000) {
-				newSettings.scale = 0.5;
-				newSettings.ltres = 5;
-				newSettings.qtres = 5;
-				newSettings.numberofcolors = 16;
-				newSettings.pathomit = 16;
-			} else if (pixelCount > 1000 * 1000) {
-				newSettings.scale = 0.75;
-				newSettings.ltres = 4;
-				newSettings.qtres = 4;
-				newSettings.numberofcolors = 12;
-			} else {
-				newSettings.scale = 1;
-				newSettings.ltres = 2;
-				newSettings.qtres = 2;
-				newSettings.numberofcolors = 8;
+				const colorCount = uniqueColors.size;
+				const newSettings = { ...localSettings };
+
+				if (colorCount < 16) {
+					// Simple illustration/logo
+					newSettings.numberofcolors = Math.max(2, colorCount + 2);
+					newSettings.pathomit = 2;
+					newSettings.ltres = 1;
+					newSettings.qtres = 1;
+					newSettings.preprocessBlur = 0;
+					newSettings.preprocessQuantize = 0;
+				} else {
+					// Photo or complex image
+					newSettings.numberofcolors = 16;
+					newSettings.pathomit = 8;
+					newSettings.ltres = 3;
+					newSettings.qtres = 3;
+					newSettings.preprocessBlur = 1; // Slight blur to reduce noise
+					newSettings.preprocessQuantize = 16; // Group colors
+				}
+
+				// Adjust scale for performance
+				if (pixelCount > 2000 * 2000) {
+					newSettings.scale = 0.5;
+				} else if (pixelCount > 1000 * 1000) {
+					newSettings.scale = 0.75;
+				} else {
+					newSettings.scale = 1;
+				}
+
+				updateSettings(newSettings);
+				return;
 			}
-			newSettings.colorquantcycles = 1;
 
+			// Fallback if canvas fails
+			const newSettings = { ...localSettings };
+			newSettings.numberofcolors = 8;
 			updateSettings(newSettings);
 		} catch (err) {
 			console.error("Magic config failed:", err);
@@ -153,7 +182,7 @@ export function ControlPanel() {
 
 	return (
 		<div className="flex flex-col h-full bg-background border-l">
-			<div className="flex items-center justify-between p-4 border-b shrink-0">
+			<div className="flex items-center justify-between p-4 border-b shrink-0 bg-card">
 				<h2 className="text-lg font-semibold">Settings</h2>
 				<div className="flex gap-1">
 					<Button
