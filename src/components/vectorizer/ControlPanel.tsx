@@ -1,10 +1,15 @@
-import { ChevronDown, RotateCcw, Sparkles } from "lucide-react";
+import { ChevronDown, Info, RotateCcw, Sparkles, Eye, EyeOff } from "lucide-react";
 import type React from "react";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { db } from "@/lib/db";
 import { useAppStore, type VectorizerSettings } from "@/store/appStore";
 
@@ -60,27 +65,22 @@ export function ControlPanel() {
 
 			// Simple heuristics
 			if (pixelCount > 2000 * 2000) {
-				// Very large image
 				newSettings.scale = 0.5;
 				newSettings.ltres = 5;
 				newSettings.qtres = 5;
 				newSettings.numberofcolors = 16;
 				newSettings.pathomit = 16;
 			} else if (pixelCount > 1000 * 1000) {
-				// Large image
 				newSettings.scale = 0.75;
 				newSettings.ltres = 4;
 				newSettings.qtres = 4;
 				newSettings.numberofcolors = 12;
 			} else {
-				// Small/Medium image
 				newSettings.scale = 1;
-				newSettings.ltres = 2; // More detail for small images
+				newSettings.ltres = 2;
 				newSettings.qtres = 2;
 				newSettings.numberofcolors = 8;
 			}
-
-			// Reduce cycles for speed
 			newSettings.colorquantcycles = 1;
 
 			updateSettings(newSettings);
@@ -88,6 +88,39 @@ export function ControlPanel() {
 			console.error("Magic config failed:", err);
 		}
 	};
+
+	const toggleAllColors = (show: boolean) => {
+		if (show) {
+			// Show all: clear hiddenColors
+			useAppStore.setState({ hiddenColors: [] });
+		} else {
+			// Hide all: set hiddenColors to all detectedColors
+			useAppStore.setState({ hiddenColors: [...detectedColors] });
+		}
+	};
+
+	const LabelWithTooltip = ({
+		label,
+		tooltip,
+		value,
+	}: { label: string; tooltip: string; value?: React.ReactNode }) => (
+		<div className="flex items-center justify-between">
+			<div className="flex items-center gap-2">
+				<Label className="cursor-help">{label}</Label>
+				<Tooltip delayDuration={300}>
+					<TooltipTrigger asChild>
+						<Info className="h-3 w-3 text-muted-foreground opacity-70 hover:opacity-100" />
+					</TooltipTrigger>
+					<TooltipContent side="right" className="max-w-[220px]">
+						<p>{tooltip}</p>
+					</TooltipContent>
+				</Tooltip>
+			</div>
+			{value !== undefined && (
+				<span className="text-xs text-muted-foreground">{value}</span>
+			)}
+		</div>
+	);
 
 	const Section = ({
 		title,
@@ -117,7 +150,7 @@ export function ControlPanel() {
 						size="icon"
 						onClick={handleMagic}
 						disabled={!currentImageId}
-						title="Auto-detect best settings (Magic)"
+						title="Auto-detect best settings"
 					>
 						<Sparkles className="h-4 w-4" />
 					</Button>
@@ -133,16 +166,55 @@ export function ControlPanel() {
 			</div>
 
 			<div className="flex-1 overflow-y-auto px-4">
+				{/* Preprocessing Settings */}
+				<Section title="Preprocessing">
+					<div className="space-y-4">
+						<p className="text-xs text-muted-foreground">
+							Clean up grainy images before vectorizing.
+						</p>
+						<div className="space-y-2">
+							<LabelWithTooltip
+								label="Denoise Blur"
+								tooltip="Applies a blur to smooth out grain and noise before processing. Higher values remove more noise but lose detail."
+								value={localSettings.preprocessBlur}
+							/>
+							<Slider
+								min={0}
+								max={10}
+								step={1}
+								value={[localSettings.preprocessBlur || 0]}
+								onValueChange={(val) => handleChange("preprocessBlur", val[0])}
+							/>
+						</div>
+
+						<div className="space-y-2">
+							<LabelWithTooltip
+								label="Simplify Colors"
+								tooltip="Reduces the number of colors (posterization) before processing. Helps merge similar colors and reduce path count."
+								value={localSettings.preprocessQuantize}
+							/>
+							<Slider
+								min={0}
+								max={16}
+								step={1}
+								value={[localSettings.preprocessQuantize || 0]}
+								onValueChange={(val) =>
+									handleChange("preprocessQuantize", val[0])
+								}
+							/>
+						</div>
+					</div>
+				</Section>
+
 				{/* Color Settings */}
 				<Section title="Color">
 					<div className="space-y-4">
 						<div className="space-y-2">
-							<div className="flex justify-between">
-								<Label>Number of Colors</Label>
-								<span className="text-xs text-muted-foreground">
-									{localSettings.numberofcolors}
-								</span>
-							</div>
+							<LabelWithTooltip
+								label="Number of Colors"
+								tooltip="Target number of colors in the palette. More colors means more detail but larger file size."
+								value={localSettings.numberofcolors}
+							/>
 							<Slider
 								min={2}
 								max={64}
@@ -154,7 +226,29 @@ export function ControlPanel() {
 
 						{detectedColors.length > 0 && (
 							<div className="space-y-2 pt-4 border-t">
-								<Label>Detected Colors</Label>
+								<div className="flex items-center justify-between mb-2">
+									<Label>Detected Colors</Label>
+									<div className="flex gap-1">
+										<Button
+											variant="ghost"
+											size="icon"
+											className="h-6 w-6"
+											onClick={() => toggleAllColors(true)}
+											title="Show All"
+										>
+											<Eye className="h-3 w-3" />
+										</Button>
+										<Button
+											variant="ghost"
+											size="icon"
+											className="h-6 w-6"
+											onClick={() => toggleAllColors(false)}
+											title="Hide All"
+										>
+											<EyeOff className="h-3 w-3" />
+										</Button>
+									</div>
+								</div>
 								<div className="grid grid-cols-6 gap-2">
 									{detectedColors.map((color) => (
 										<button
@@ -172,27 +266,18 @@ export function ControlPanel() {
 													? `Show ${color}`
 													: `Hide ${color}`
 											}
-											aria-label={
-												hiddenColors.includes(color)
-													? `Show ${color}`
-													: `Hide ${color}`
-											}
 										/>
 									))}
 								</div>
-								<p className="text-[10px] text-muted-foreground">
-									Click to toggle color visibility
-								</p>
 							</div>
 						)}
 
 						<div className="space-y-2">
-							<div className="flex justify-between">
-								<Label>Min Color Ratio</Label>
-								<span className="text-xs text-muted-foreground">
-									{localSettings.mincolorratio}
-								</span>
-							</div>
+							<LabelWithTooltip
+								label="Min Color Ratio"
+								tooltip="Ignore colors that occupy less than this percentage of the image."
+								value={localSettings.mincolorratio}
+							/>
 							<Slider
 								min={0}
 								max={10}
@@ -203,12 +288,11 @@ export function ControlPanel() {
 						</div>
 
 						<div className="space-y-2">
-							<div className="flex justify-between">
-								<Label>Color Quant Cycles</Label>
-								<span className="text-xs text-muted-foreground">
-									{localSettings.colorquantcycles}
-								</span>
-							</div>
+							<LabelWithTooltip
+								label="Color Quant Cycles"
+								tooltip="Number of times to refine the color palette. Higher values are slower but yield better color matching."
+								value={localSettings.colorquantcycles}
+							/>
 							<Slider
 								min={1}
 								max={10}
@@ -226,12 +310,11 @@ export function ControlPanel() {
 				<Section title="Detail">
 					<div className="space-y-4">
 						<div className="space-y-2">
-							<div className="flex items-center justify-between">
-								<Label>Path Omit (px)</Label>
-								<span className="text-xs text-muted-foreground">
-									{localSettings.pathomit}
-								</span>
-							</div>
+							<LabelWithTooltip
+								label="Path Omit (px)"
+								tooltip="Ignore paths (shapes) smaller than this pixel size. Reduces noise."
+								value={localSettings.pathomit}
+							/>
 							<Slider
 								min={0}
 								max={100}
@@ -242,12 +325,11 @@ export function ControlPanel() {
 						</div>
 
 						<div className="space-y-2">
-							<div className="flex justify-between">
-								<Label>Linear Trace Precision</Label>
-								<span className="text-xs text-muted-foreground">
-									{localSettings.ltres}
-								</span>
-							</div>
+							<LabelWithTooltip
+								label="Linear Trace Precision"
+								tooltip="Error threshold for linear path tracing. Lower values mean more precise lines but more points."
+								value={localSettings.ltres}
+							/>
 							<Slider
 								min={0.01}
 								max={10}
@@ -258,12 +340,11 @@ export function ControlPanel() {
 						</div>
 
 						<div className="space-y-2">
-							<div className="flex justify-between">
-								<Label>Quadratic Spline Precision</Label>
-								<span className="text-xs text-muted-foreground">
-									{localSettings.qtres}
-								</span>
-							</div>
+							<LabelWithTooltip
+								label="Quadratic Spline Precision"
+								tooltip="Error threshold for curve fitting. Lower values mean smoother curves but more points."
+								value={localSettings.qtres}
+							/>
 							<Slider
 								min={0.01}
 								max={10}
@@ -274,7 +355,17 @@ export function ControlPanel() {
 						</div>
 
 						<div className="flex items-center justify-between">
-							<Label htmlFor="enhance">Right Angle Enhance</Label>
+							<div className="flex items-center gap-2">
+								<Label htmlFor="enhance">Right Angle Enhance</Label>
+								<Tooltip delayDuration={300}>
+									<TooltipTrigger asChild>
+										<Info className="h-3 w-3 text-muted-foreground cursor-help" />
+									</TooltipTrigger>
+									<TooltipContent side="right">
+										<p>Attempts to sharpen corners to 90 degrees.</p>
+									</TooltipContent>
+								</Tooltip>
+							</div>
 							<Switch
 								id="enhance"
 								checked={localSettings.rightangleenhance}
@@ -290,12 +381,11 @@ export function ControlPanel() {
 				<Section title="Render">
 					<div className="space-y-4">
 						<div className="space-y-2">
-							<div className="flex justify-between">
-								<Label>Blur Radius</Label>
-								<span className="text-xs text-muted-foreground">
-									{localSettings.blurradius}
-								</span>
-							</div>
+							<LabelWithTooltip
+								label="Blur Radius"
+								tooltip="Applies a blur to the generated SVG paths."
+								value={localSettings.blurradius}
+							/>
 							<Slider
 								min={0}
 								max={20}
@@ -305,12 +395,11 @@ export function ControlPanel() {
 							/>
 						</div>
 						<div className="space-y-2">
-							<div className="flex justify-between">
-								<Label>Blur Delta</Label>
-								<span className="text-xs text-muted-foreground">
-									{localSettings.blurdelta}
-								</span>
-							</div>
+							<LabelWithTooltip
+								label="Blur Delta"
+								tooltip="The standard deviation for the Gaussian blur."
+								value={localSettings.blurdelta}
+							/>
 							<Slider
 								min={0}
 								max={255}
@@ -321,12 +410,11 @@ export function ControlPanel() {
 						</div>
 
 						<div className="space-y-2">
-							<div className="flex justify-between">
-								<Label>Stroke Width</Label>
-								<span className="text-xs text-muted-foreground">
-									{localSettings.strokewidth}
-								</span>
-							</div>
+							<LabelWithTooltip
+								label="Stroke Width"
+								tooltip="Width of the stroke around filled shapes."
+								value={localSettings.strokewidth}
+							/>
 							<Slider
 								min={0}
 								max={10}
@@ -337,12 +425,11 @@ export function ControlPanel() {
 						</div>
 
 						<div className="space-y-2">
-							<div className="flex justify-between">
-								<Label>Output Scale</Label>
-								<span className="text-xs text-muted-foreground">
-									{localSettings.outputScale}x
-								</span>
-							</div>
+							<LabelWithTooltip
+								label="Output Scale"
+								tooltip="Scale factor for the final SVG output dimensions."
+								value={`${localSettings.outputScale}x`}
+							/>
 							<Slider
 								min={1}
 								max={10}

@@ -24,6 +24,8 @@ export interface VectorizerSettings {
 
 	// Custom settings
 	outputScale: number; // For final export
+	preprocessBlur: number; // 0 to X
+	preprocessQuantize: number; // 0 to X (levels per channel)
 }
 
 export const defaultSettings: VectorizerSettings = {
@@ -47,6 +49,8 @@ export const defaultSettings: VectorizerSettings = {
 	blurradius: 0,
 	blurdelta: 20,
 	outputScale: 1,
+	preprocessBlur: 0,
+	preprocessQuantize: 0,
 };
 
 interface AppState {
