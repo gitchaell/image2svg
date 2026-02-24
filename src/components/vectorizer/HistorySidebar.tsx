@@ -1,6 +1,7 @@
 import { useLiveQuery } from "dexie-react-hooks";
 import { Image as ImageIcon, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useI18n } from "@/components/shared/I18nContext";
 import { Button } from "@/components/ui/button";
 import { db } from "@/lib/db";
 import { cn } from "@/lib/utils";
@@ -33,6 +34,7 @@ function ImageThumbnail({ blob }: { blob: Blob }) {
 }
 
 export function HistorySidebar() {
+	const t = useI18n();
 	const images = useLiveQuery(() =>
 		db.images.orderBy("createdAt").reverse().toArray(),
 	);
@@ -51,20 +53,27 @@ export function HistorySidebar() {
 	// While loading or undefined
 	if (images === undefined)
 		return (
-			<div className="p-4 text-center text-muted-foreground">
-				Loading history...
+			<div className="flex flex-col h-full bg-background border-r w-full md:w-80 shrink-0">
+				<div className="p-4 border-b bg-card">
+					<h2 className="font-semibold text-lg">{t("history.title")}</h2>
+				</div>
+				<div className="p-4 space-y-2">
+					<div className="h-14 w-full bg-muted rounded-lg animate-pulse" />
+					<div className="h-14 w-full bg-muted rounded-lg animate-pulse" />
+					<div className="h-14 w-full bg-muted rounded-lg animate-pulse" />
+				</div>
 			</div>
 		);
 
 	return (
 		<div className="flex flex-col h-full bg-background border-r w-full md:w-80 shrink-0">
 			<div className="p-4 border-b bg-card">
-				<h2 className="font-semibold text-lg">History</h2>
+				<h2 className="font-semibold text-lg">{t("history.title")}</h2>
 			</div>
 			<div className="flex-1 overflow-y-auto p-2 space-y-2">
 				{images.length === 0 ? (
 					<div className="text-center text-sm text-muted-foreground p-4">
-						No images uploaded yet.
+						{t("history.empty")}
 					</div>
 				) : (
 					images.map((img) => (
