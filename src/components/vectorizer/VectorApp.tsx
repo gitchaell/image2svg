@@ -27,9 +27,10 @@ export function VectorApp() {
 		}
 	}, [currentImageId]);
 
-	const Content = () => {
-		if (isDesktop) {
-			return (
+	return (
+		<TooltipProvider>
+			<Toaster position="top-center" richColors />
+			{isDesktop ? (
 				<div className="flex h-full w-full bg-background overflow-hidden text-foreground">
 					{/* Left Sidebar: History & Upload */}
 					<div
@@ -95,68 +96,58 @@ export function VectorApp() {
 						<ControlPanel />
 					</div>
 				</div>
-			);
-		}
-
-		// Mobile Layout
-		return (
-			<div className="h-full w-full flex flex-col bg-background text-foreground">
-				<Tabs
-					value={activeTab}
-					onValueChange={setActiveTab}
-					className="flex-1 flex flex-col overflow-hidden w-full"
-				>
-					<div className="border-b px-4 py-2 flex items-center justify-between shrink-0 bg-background z-10 h-14">
-						<div className="flex items-center gap-2">
-							<Logo className="w-6 h-6" />
-							<span className="font-bold truncate">image2svg</span>
-						</div>
-						<div className="flex items-center gap-1">
-							<LanguageSelector />
-							<ThemeToggle />
-						</div>
-					</div>
-
-					<div className="border-b px-4 py-1 flex justify-center bg-muted/20 shrink-0">
-						<TabsList className="shrink-0">
-							<TabsTrigger value="library">Library</TabsTrigger>
-							<TabsTrigger value="editor">Editor</TabsTrigger>
-							<TabsTrigger value="preview">Preview</TabsTrigger>
-						</TabsList>
-					</div>
-
-					<TabsContent
-						value="library"
-						className="flex-1 overflow-y-auto p-4 space-y-4 m-0 data-[state=inactive]:hidden"
+			) : (
+				<div className="h-full w-full flex flex-col bg-background text-foreground">
+					<Tabs
+						value={activeTab}
+						onValueChange={setActiveTab}
+						className="flex-1 flex flex-col overflow-hidden w-full"
 					>
-						<UploadZone />
-						<div className="border rounded-md h-96">
-							<HistorySidebar />
+						<div className="border-b px-4 py-2 flex items-center justify-between shrink-0 bg-background z-10 h-14">
+							<div className="flex items-center gap-2">
+								<Logo className="w-6 h-6" />
+								<span className="font-bold truncate">image2svg</span>
+							</div>
+							<div className="flex items-center gap-1">
+								<LanguageSelector />
+								<ThemeToggle />
+							</div>
 						</div>
-					</TabsContent>
 
-					<TabsContent
-						value="editor"
-						className="flex-1 overflow-hidden flex flex-col m-0 data-[state=inactive]:hidden"
-					>
-						<ControlPanel />
-					</TabsContent>
+						<div className="border-b px-4 py-1 flex justify-center bg-muted/20 shrink-0">
+							<TabsList className="shrink-0">
+								<TabsTrigger value="library">Library</TabsTrigger>
+								<TabsTrigger value="editor">Editor</TabsTrigger>
+								<TabsTrigger value="preview">Preview</TabsTrigger>
+							</TabsList>
+						</div>
 
-					<TabsContent
-						value="preview"
-						className="flex-1 overflow-hidden relative m-0 h-full data-[state=inactive]:hidden"
-					>
-						<SVGPreview />
-					</TabsContent>
-				</Tabs>
-			</div>
-		);
-	};
+						<TabsContent
+							value="library"
+							className="flex-1 overflow-y-auto p-4 space-y-4 m-0 data-[state=inactive]:hidden"
+						>
+							<UploadZone />
+							<div className="border rounded-md h-96">
+								<HistorySidebar />
+							</div>
+						</TabsContent>
 
-	return (
-		<TooltipProvider>
-			<Toaster position="top-center" richColors />
-			<Content />
+						<TabsContent
+							value="editor"
+							className="flex-1 overflow-hidden flex flex-col m-0 data-[state=inactive]:hidden"
+						>
+							<ControlPanel />
+						</TabsContent>
+
+						<TabsContent
+							value="preview"
+							className="flex-1 overflow-hidden relative m-0 h-full data-[state=inactive]:hidden"
+						>
+							<SVGPreview />
+						</TabsContent>
+					</Tabs>
+				</div>
+			)}
 		</TooltipProvider>
 	);
 }
